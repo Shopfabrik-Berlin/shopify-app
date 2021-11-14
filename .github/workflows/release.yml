@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Build
+        run: yarn build
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Release
+        id: release
+        uses: GoogleCloudPlatform/release-please-action@v2
+        if: github.event_name == 'push'
+        with:
+          command: manifest
+
+      - name: Publish
+        if: ${{ steps.release.outputs.releases_created }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          export RELEASED_PATHS=${{ steps.release.outputs.paths_released }}
+          export WORKSPACES_TO_PUBLISH=$(yarn workspaces list --json | jq 'select(.location as $location | env.RELEASED_PATHS | index($location)) | .name')
+          export WORKSPACES_TO_PUBLISH_GLOB=$(echo $WORKSPACES_TO_PUBLISH | jq --raw-output --slurp 'join("|")')
+          yarn workspaces foreach --include $WORKSPACES_TO_PUBLISH_GLOB --verbose run npm publish

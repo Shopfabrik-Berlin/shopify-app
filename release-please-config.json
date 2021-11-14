@@ -1,0 +1,6 @@
+{
+  "bootstrap-sha": "f6e76270a3b1601fd4f9bf72de88bd06486c36b1",
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "packages": {}
+}
