@@ -21,11 +21,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {
         "name": "shopify-app",
         "reference": "workspace:."
+      },
+      {
+        "name": "@shopfabrik/gid",
+        "reference": "workspace:packages/gid"
       }
     ],
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)|$))$)",
     "fallbackExclusionList": [
+      ["@shopfabrik/gid", ["workspace:packages/gid"]],
       ["shopify-app", ["workspace:."]]
     ],
     "fallbackPool": [
@@ -378,6 +383,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fastq", "npm:1.13.0"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["@shopfabrik/gid", [
+        ["workspace:packages/gid", {
+          "packageLocation": "./packages/gid/",
+          "packageDependencies": [
+            ["@shopfabrik/gid", "workspace:packages/gid"],
+            ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["@types/json-schema", [

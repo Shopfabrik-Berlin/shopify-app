@@ -291,6 +291,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shopfabrik/gid@workspace:packages/gid":
+  version: 0.0.0-use.local
+  resolution: "@shopfabrik/gid@workspace:packages/gid"
+  dependencies:
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
 "@types/json-schema@npm:^7.0.7":
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
