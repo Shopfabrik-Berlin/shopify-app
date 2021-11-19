@@ -1,0 +1,3 @@
+fragment Shop on Shop {
+  id
+}
