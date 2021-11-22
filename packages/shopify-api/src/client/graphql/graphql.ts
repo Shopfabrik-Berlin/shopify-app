@@ -1,4 +1,5 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core';
+import fetch from 'cross-fetch';
 import { either } from 'fp-ts';
 import type { TaskEither } from 'fp-ts/TaskEither';
 import type { ReadonlyRecord } from '../../types';
@@ -32,11 +33,14 @@ export type ClientGraphqlConfig = {
 export function mkClientGraphqlEnv(config: ClientGraphqlConfig): ClientGraphqlEnv {
   const getClient = mkMemoized(() => {
     return new ApolloClient({
-      uri: `https://${config.shopOrigin}/admin/api/2021-10/graphql.json`,
-      headers: {
-        'X-Shopify-Access-Token': config.accessToken,
-      },
       cache: new InMemoryCache(),
+      link: new HttpLink({
+        uri: `https://${config.shopOrigin}/admin/api/2021-10/graphql.json`,
+        headers: {
+          'X-Shopify-Access-Token': config.accessToken,
+        },
+        fetch,
+      }),
     });
   });
 
