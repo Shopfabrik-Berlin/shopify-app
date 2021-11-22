@@ -1,0 +1,7 @@
+query shopMetafield($namespace: String!, $key: String!) {
+  shop {
+    metafield(namespace: $namespace, key: $key) {
+      ...Metafield
+    }
+  }
+}

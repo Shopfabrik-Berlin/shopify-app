@@ -4,4 +4,5 @@
 .yarn/
 build/
 
+*.generated.*
 .pnp.*
