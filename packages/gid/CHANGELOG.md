@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/gid-v0.1.1...gid-v0.1.2) (2021-11-22)
+
+
+### Bug Fixes
+
+* **gid:** use commonjs module import ([c0467cd](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/c0467cdd7402457932a334a9cfd1653568938fb8))
+
 ### [0.1.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/gid-v0.1.0...gid-v0.1.1) (2021-11-22)
 
 
