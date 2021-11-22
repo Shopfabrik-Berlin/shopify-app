@@ -2448,6 +2448,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@shopfabrik/gid", "workspace:packages/gid"],
             ["@types/node", "npm:16.11.9"],
             ["axios", "npm:0.24.0"],
+            ["cross-fetch", "npm:3.1.4"],
             ["deepmerge-ts", "npm:1.0.1"],
             ["fp-ts", "npm:2.11.0"],
             ["graphql", "npm:15.7.2"],

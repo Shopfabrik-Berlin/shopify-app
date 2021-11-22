@@ -1554,6 +1554,7 @@ __metadata:
     "@shopfabrik/gid": "workspace:^0.1.0"
     "@types/node": 16.11.9
     axios: ^0.24.0
+    cross-fetch: ^3.0.0
     deepmerge-ts: ^1.0.1
     fp-ts: 2.11.0
     graphql: ^15.0.0
@@ -2798,7 +2799,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6":
+"cross-fetch@npm:^3.0.0, cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6":
   version: 3.1.4
   resolution: "cross-fetch@npm:3.1.4"
   dependencies:
