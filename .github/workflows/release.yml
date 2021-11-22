@@ -41,7 +41,5 @@ jobs:
         run: |
           export RELEASED_PATHS=${{ steps.release.outputs.paths_released }}
           export WORKSPACES_TO_PUBLISH=$(yarn workspaces list --json | jq 'select(.location as $location | env.RELEASED_PATHS | index($location)) | .name')
-          echo $WORKSPACES_TO_PUBLISH
           export WORKSPACES_TO_PUBLISH_GLOB=$(echo $WORKSPACES_TO_PUBLISH | jq --raw-output --slurp 'join("|")')
-          echo $WORKSPACES_TO_PUBLISH_GLOB
-          yarn workspaces foreach --include $WORKSPACES_TO_PUBLISH_GLOB --verbose run npm publish
+          yarn workspaces foreach --include $WORKSPACES_TO_PUBLISH_GLOB --verbose npm publish
