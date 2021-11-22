@@ -66,7 +66,7 @@ export function handleUserErrors<A, B>(
     const errors = getErrors(input);
     const result = getResult(input);
 
-    if (errors != null || result == null) {
+    if (errors?.length || result == null) {
       return either.left(
         new GraphQLRequestError({
           config,
