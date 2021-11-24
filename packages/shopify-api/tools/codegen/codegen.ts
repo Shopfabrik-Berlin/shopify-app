@@ -34,6 +34,7 @@ async function run(): Promise<void> {
         useTypeImports: true,
         scalars: {
           ID: '@shopfabrik/gid#GID',
+          URL: 'string',
         },
       },
     },
@@ -50,7 +51,7 @@ async function run(): Promise<void> {
   );
 }
 
-const FRAGMENTS = ['Metafield', 'Shop'];
+const FRAGMENTS = ['Metafield', 'Shop', 'WebhookSubscription'];
 
 const mkTypeRx = (typeName: string): RegExp =>
   new RegExp(
@@ -76,14 +77,23 @@ function processFile(content: string): string {
       )
       .replace(
         DOCUMENT_RX,
-        (match, declaration: string, document: string, fragment: string, queryType: string) =>
-          match
+        (match, declaration: string, document: string, fragment: string, queryType: string) => {
+          return match
             .replace(
               declaration,
               `${declaration} <T1 extends Partial<Types.${fragmentName}>>(${fragment}: DocumentNode<T1>) =>`,
             )
             .replace(document, `(${document})`)
-            .replace(queryType, `${queryType}<T1>`),
+            .replace(
+              `{"kind":"FragmentSpread","name":{"kind":"Name","value":"${fragmentName}"}}`,
+              (match) =>
+                match.replace(
+                  `"${fragmentName}"`,
+                  `(${fragment}.definitions[0] as any).name.value`,
+                ),
+            )
+            .replace(queryType, `${queryType}<T1>`);
+        },
       );
   }, content);
 }

@@ -1,0 +1,36 @@
+query webhookSubscriptions(
+  $after: String
+  $before: String
+  $callbackUrl: URL
+  $first: Int
+  $format: WebhookSubscriptionFormat
+  $last: Int
+  $query: String
+  $reverse: Boolean
+  $sortKey: WebhookSubscriptionSortKeys
+  $topics: [WebhookSubscriptionTopic!]
+) {
+  webhookSubscriptions(
+    after: $after
+    before: $before
+    callbackUrl: $callbackUrl
+    first: $first
+    format: $format
+    last: $last
+    query: $query
+    reverse: $reverse
+    sortKey: $sortKey
+    topics: $topics
+  ) {
+    edges {
+      cursor
+      node {
+        ...WebhookSubscription
+      }
+    }
+
+    pageInfo {
+      ...PageInfo
+    }
+  }
+}

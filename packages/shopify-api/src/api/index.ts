@@ -4,3 +4,4 @@ export * as metafield from './metafield';
 export * as shop from './shop';
 export * as theme from './theme';
 export type { Theme } from './theme';
+export * as webhook from './webhook';
