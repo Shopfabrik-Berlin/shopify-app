@@ -6,4 +6,6 @@ export type {
   PrintedGraphQLRequestConfig,
   UserError,
 } from './GraphqlRequestError';
+export * as pagination from './pagination';
+export type { PageInfo, PaginationConnection, PaginationEdge } from './pagination';
 export * from './request';
