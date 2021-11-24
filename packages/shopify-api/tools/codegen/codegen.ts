@@ -19,7 +19,7 @@ async function run(): Promise<void> {
         },
 
         src: {
-          documents: './src/api/**/*.graphql',
+          documents: './src/**/*.graphql',
           preset: 'near-operation-file',
           presetConfig: {
             baseTypesPath: 'schema.generated.ts',
