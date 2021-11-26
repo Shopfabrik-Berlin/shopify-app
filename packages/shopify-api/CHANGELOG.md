@@ -1,5 +1,21 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.0...shopify-api-v0.1.1) (2021-11-26)
+
+
+### Features
+
+* **shopify-api:** add graphql pagination ([53c6a8b](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/53c6a8bbdd19cce33a72bb65be01d0b17dc3b353))
+* **shopify-api:** add webhook api ([a56b67b](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/a56b67b7630e2b9526cc4a1d0bf894efb935486e))
+
+
+### Bug Fixes
+
+* **shopify-api:** add shop.id to the shopMetafield query ([5689b7a](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/5689b7ae0cd89f52fb5e097b9f1427aff0bae941))
+* **shopify-api:** check graphql user errors array length ([2cd1f5e](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/2cd1f5e34a200904358c06b69dff6e61cf2116f8))
+* **shopify-api:** ponyfill fetch for ApolloClient ([d30ba6b](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/d30ba6b89514bec062c2f9271ea8a0cc55ae2ad0))
+* **shopify-api:** update rest retry policy ([4382416](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/4382416189caa2be039683dd8c827be3d0f07236))
+
 ## 0.1.0 (2021-11-22)
 
 
