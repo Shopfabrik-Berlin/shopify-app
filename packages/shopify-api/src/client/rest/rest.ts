@@ -26,7 +26,7 @@ export type ClientRestPayload<A, I = unknown, O = unknown> = (
   env: ClientRestEnv,
 ) => TaskEither<RestRequestError<I, O>, A>;
 
-const RETRY_POLICY = retry.Monoid.concat(retry.exponentialBackoff(500), retry.limitRetries(4));
+const RETRY_POLICY = retry.Monoid.concat(retry.constantDelay(1000), retry.limitRetries(20));
 
 export type ClientRestConfig = {
   readonly accessToken: string;
@@ -54,7 +54,7 @@ export function mkClientRestEnv(config: ClientRestConfig): ClientRestEnv {
           );
 
           return pipe(
-            retrying(RETRY_POLICY, () => request, isRequestLimitError),
+            retrying(RETRY_POLICY, () => request, shouldRetryRequest),
             taskEither.map((response) => response.data),
           );
         },
@@ -88,6 +88,10 @@ function toRequestError<I, O>(config: RestRequestConfig<I>) {
   };
 }
 
-function isRequestLimitError(ma: Either<RestRequestError, unknown>): boolean {
-  return either.isLeft(ma) && ma.left.response?.status === 429;
+const RETRY_STATUS_CODES = [408, 413, 429, 500, 502, 503, 504, 521, 522, 524];
+
+function shouldRetryRequest(ma: Either<RestRequestError, unknown>): boolean {
+  return (
+    either.isLeft(ma) && !!ma.left.response && RETRY_STATUS_CODES.includes(ma.left.response.status)
+  );
 }
