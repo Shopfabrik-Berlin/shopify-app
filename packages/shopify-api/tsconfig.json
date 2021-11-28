@@ -3,8 +3,7 @@
   "compilerOptions": {
     "target": "ES2021",
     "lib": ["ES2021"],
-    "module": "ES2020",
-    "outDir": "./build",
+    "noEmit": true,
     "rootDir": "./src"
   },
   "include": ["./src"]
