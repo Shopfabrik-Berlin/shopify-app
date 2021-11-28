@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.3](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/gid-v0.1.2...gid-v0.1.3) (2021-11-28)
+
+
+### Features
+
+* **gid:** add encode ([2c6197e](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/2c6197eb02fb01608eba4baa55d2424e16f67b7b))
+
 ### [0.1.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/gid-v0.1.1...gid-v0.1.2) (2021-11-22)
 
 
