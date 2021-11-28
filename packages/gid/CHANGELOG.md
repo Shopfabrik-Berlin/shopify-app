@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.4](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/gid-v0.1.3...gid-v0.1.4) (2021-11-28)
+
+
+### Features
+
+* **gid:** publish cjs and esm builds ([09af4a1](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/09af4a18bdc10da5d87d3e74b4cb59203eb0c800))
+
 ### [0.1.3](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/gid-v0.1.2...gid-v0.1.3) (2021-11-28)
 
 
