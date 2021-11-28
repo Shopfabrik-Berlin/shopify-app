@@ -11,11 +11,18 @@
     "name": "Denis Goncharenko",
     "email": "dddenjer@gmail.com"
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "files": [
     "./build"
   ],
-  "module": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/cjs/index.js",
+  "module": "./build/esm/index.js",
+  "exports": {
+    "require": "./build/cjs/index.js",
+    "import": "./build/esm/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Shopfabrik-Berlin/shopify-app.git",
@@ -24,8 +31,10 @@
   "sideEffects": false,
   "packageManager": "yarn@3.1.0",
   "scripts": {
-    "build": "tsc",
+    "build": "yarn build:cjs && yarn build:esm",
     "build:ci": "yarn gen && yarn build",
+    "build:cjs": "tsc --project ./tsconfig.cjs.json",
+    "build:esm": "tsc --project ./tsconfig.esm.json",
     "clean": "yarn g:clean",
     "gen": "ts-node ./tools/codegen/codegen.ts",
     "gen:schema": "graphql-codegen --config ./tools/schema/codegen.yml"
