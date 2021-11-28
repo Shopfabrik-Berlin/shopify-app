@@ -3,8 +3,7 @@
   "compilerOptions": {
     "target": "ES2015",
     "lib": ["ES2015"],
-    "module": "CommonJS",
-    "outDir": "./build",
+    "noEmit": true,
     "rootDir": "./src"
   },
   "include": ["./src"]

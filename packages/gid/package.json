@@ -14,8 +14,12 @@
   "files": [
     "./build"
   ],
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/cjs/index.js",
+  "module": "./build/esm/index.js",
+  "exports": {
+    "require": "./build/cjs/index.js",
+    "import": "./build/esm/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Shopfabrik-Berlin/shopify-app.git",
@@ -24,8 +28,10 @@
   "sideEffects": false,
   "packageManager": "yarn@3.1.0",
   "scripts": {
-    "build": "tsc",
+    "build": "yarn build:cjs && yarn build:esm",
     "build:ci": "yarn build",
+    "build:cjs": "tsc --project ./tsconfig.cjs.json",
+    "build:esm": "tsc --project ./tsconfig.esm.json",
     "clean": "yarn g:clean"
   },
   "devDependencies": {
