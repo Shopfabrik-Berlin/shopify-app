@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.1...shopify-api-v0.1.2) (2021-11-28)
+
+
+### Features
+
+* **shopify-api:** publish cjs and esm builds ([dbf1db1](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/dbf1db10c7d8cdc5001348f35f771192df0ce479))
+
 ### [0.1.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.0...shopify-api-v0.1.1) (2021-11-26)
 
 
