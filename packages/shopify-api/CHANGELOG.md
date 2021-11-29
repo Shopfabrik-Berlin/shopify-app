@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.3](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.2...shopify-api-v0.1.3) (2021-11-29)
+
+
+### Bug Fixes
+
+* **shopify-api:** handle apollo client errors ([48ddf07](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/48ddf07c2ccda10350dc0a331ccd56df22ae58cb))
+
 ### [0.1.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.1...shopify-api-v0.1.2) (2021-11-28)
 
 
