@@ -1,11 +1,12 @@
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core';
+import { ApolloClient, HttpLink, InMemoryCache, isApolloError } from '@apollo/client/core';
 import fetch from 'cross-fetch';
-import { either } from 'fp-ts';
+import { taskEither } from 'fp-ts';
+import { pipe } from 'fp-ts/function';
 import type { TaskEither } from 'fp-ts/TaskEither';
 import type { ReadonlyRecord } from '../../types';
 import { mkMemoized } from '../../utils';
 import { GraphQLRequestError } from './GraphqlRequestError';
-import type { MutateConfig, QueryConfig } from './request';
+import type { GraphQLRequestConfig, MutateConfig, QueryConfig } from './request';
 
 export interface ClientGraphqlEnv {
   readonly shopify: {
@@ -48,49 +49,70 @@ export function mkClientGraphqlEnv(config: ClientGraphqlConfig): ClientGraphqlEn
     shopify: {
       client: {
         graphql: {
-          mutate:
-            <A extends ReadonlyRecord, I extends ReadonlyRecord = ReadonlyRecord>(
-              config: MutateConfig<A, I>,
-            ) =>
-            async () => {
-              const response = await getClient().mutate(config);
-
-              if (!response.data) {
-                return either.left(
+          mutate: <A extends ReadonlyRecord, I extends ReadonlyRecord = ReadonlyRecord>(
+            config: MutateConfig<A, I>,
+          ) => {
+            return pipe(
+              taskEither.tryCatch(() => getClient().mutate(config), toRequestError(config)),
+              taskEither.filterOrElse(
+                (response): response is typeof response & { data: A } => !!response.data,
+                (response) =>
                   new GraphQLRequestError({
                     config,
                     graphqlErrors: response.errors,
                   }),
-                );
-              }
+              ),
+              taskEither.map((response) => response.data),
+            );
+          },
 
-              return either.right(response.data);
-            },
-
-          query:
-            <A extends ReadonlyRecord, I extends ReadonlyRecord = ReadonlyRecord>(
-              config: QueryConfig<A, I>,
-            ) =>
-            async () => {
-              const response = await getClient().query(config);
-
-              if (response.error) {
-                console.log(JSON.stringify(response, null, 2));
-
-                return either.left(
+          query: <A extends ReadonlyRecord, I extends ReadonlyRecord = ReadonlyRecord>(
+            config: QueryConfig<A, I>,
+          ) => {
+            return pipe(
+              taskEither.tryCatch(() => getClient().query(config), toRequestError(config)),
+              taskEither.filterOrElse(
+                (response) => !!response.data,
+                (response) =>
                   new GraphQLRequestError({
-                    message: response.error.message,
+                    message: response.error?.message,
                     config,
-                    graphqlErrors: response.error.graphQLErrors,
-                    networkError: response.error.networkError ?? undefined,
+                    graphqlErrors: response.error?.graphQLErrors || response.errors,
+                    networkError: response.error?.networkError ?? undefined,
                   }),
-                );
-              }
-
-              return either.right(response.data);
-            },
+              ),
+              taskEither.map((response) => response.data),
+            );
+          },
         },
       },
     },
+  };
+}
+
+function toRequestError<A extends ReadonlyRecord, I extends ReadonlyRecord>(
+  config: GraphQLRequestConfig<A, I>,
+) {
+  return (reason: unknown): GraphQLRequestError => {
+    if (reason instanceof Error && isApolloError(reason)) {
+      return new GraphQLRequestError({
+        message: reason.message,
+        config,
+        graphqlErrors: reason.graphQLErrors,
+        networkError: reason.networkError ?? undefined,
+      });
+    }
+
+    if (reason instanceof Error) {
+      return new GraphQLRequestError({
+        message: reason.message,
+        config,
+      });
+    }
+
+    return new GraphQLRequestError({
+      message: `Unknown GraphQL Request Error: ${String(reason)}`,
+      config,
+    });
   };
 }
