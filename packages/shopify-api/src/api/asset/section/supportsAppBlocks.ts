@@ -2,7 +2,7 @@ import { option, readerTaskEither } from 'fp-ts';
 import { constFalse, pipe } from 'fp-ts/function';
 import type { ClientRestPayload } from '../../../client/rest';
 import type { Asset } from '../../asset';
-import * as asset from '../../asset';
+import * as asset from '../../asset/Asset';
 import type { SectionSchemaBlock } from './SectionSchema';
 import * as sectionSchema from './SectionSchema';
 

@@ -1,7 +1,7 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { taskEither } from 'fp-ts';
 import { pipe } from 'fp-ts/function';
-import type { ClientGraphqlPayload } from '../..';
+import type { ClientGraphqlPayload } from '../../client';
 import type * as GQL from '../../schema.generated';
 import { ShopDocument } from './shop.generated';
 
