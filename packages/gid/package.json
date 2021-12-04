@@ -29,10 +29,11 @@
   "packageManager": "yarn@3.1.0",
   "scripts": {
     "build": "yarn build:cjs && yarn build:esm",
-    "build:ci": "yarn build",
+    "build:ci": "yarn dpdm && yarn build",
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:esm": "tsc --project ./tsconfig.esm.json",
-    "clean": "yarn g:clean"
+    "clean": "yarn g:clean",
+    "dpdm": "yarn g:dpdm ./src/index.ts"
   },
   "devDependencies": {
     "typescript": "4.4.4"
