@@ -2,7 +2,7 @@ import type { GID } from '@shopfabrik/gid';
 import { option, readerTaskEither, readonlyArray } from 'fp-ts';
 import { constFalse, pipe } from 'fp-ts/function';
 import type { ClientRestPayload } from '../../../client/rest';
-import * as asset from '../../asset';
+import * as asset from '../../asset/Asset';
 import type { Asset } from '../Asset';
 import * as jsonTemplate from './JsonTemplate';
 
