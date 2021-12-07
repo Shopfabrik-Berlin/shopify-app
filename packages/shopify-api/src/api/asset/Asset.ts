@@ -1,6 +1,5 @@
 import { getDataLoader } from '@dddenis/dataloader-fp';
-import type { GID } from '@shopfabrik/gid';
-import * as gid from '@shopfabrik/gid';
+import { GID, gid } from '@shopfabrik/shopify-data';
 import { either, option, readerTask, readerTaskEither, task, taskEither } from 'fp-ts';
 import { constFalse, constTrue, pipe } from 'fp-ts/function';
 import type { Option } from 'fp-ts/Option';

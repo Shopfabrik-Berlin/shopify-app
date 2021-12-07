@@ -1,15 +1,13 @@
 import { getDataLoader } from '@dddenis/dataloader-fp';
-import type { GID } from '@shopfabrik/gid';
-import * as gid from '@shopfabrik/gid';
+import { GID, gid } from '@shopfabrik/shopify-data';
 import { either, readerTask, task, taskEither } from 'fp-ts';
 import { pipe } from 'fp-ts/function';
 import type { Option } from 'fp-ts/Option';
 import { ClientRestEnv, ClientRestPayload, rest, RestRequestError } from '../../client';
-import type { GID as ThemeGID } from './GID';
 
 export type Theme = {
   readonly id: number;
-  readonly admin_graphql_api_id: ThemeGID;
+  readonly admin_graphql_api_id: GID;
   readonly created_at: string;
   readonly name: string;
   readonly previewable: boolean;

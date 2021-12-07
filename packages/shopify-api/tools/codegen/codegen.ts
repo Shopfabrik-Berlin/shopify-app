@@ -33,7 +33,7 @@ async function run(): Promise<void> {
         preResolveTypes: false,
         useTypeImports: true,
         scalars: {
-          ID: '@shopfabrik/gid#GID',
+          ID: '@shopfabrik/shopify-data#GID',
           URL: 'string',
         },
       },

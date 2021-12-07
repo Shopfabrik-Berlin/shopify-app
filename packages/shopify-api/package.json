@@ -44,7 +44,7 @@
     "@apollo/client": "^3.2.1",
     "@dddenis/dataloader-fp": "^0.1.0",
     "@graphql-typed-document-node/core": "^3.0.0",
-    "@shopfabrik/gid": "workspace:^0.1.0",
+    "@shopfabrik/shopify-data": "^0.1.0",
     "axios": "^0.24.0",
     "cross-fetch": "^3.0.0",
     "deepmerge-ts": "^1.0.1",
