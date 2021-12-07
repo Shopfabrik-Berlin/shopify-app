@@ -1,5 +1,5 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import type { GID } from '@shopfabrik/gid';
+import type { GID } from '@shopfabrik/shopify-data';
 import { option, taskEither } from 'fp-ts';
 import { pipe } from 'fp-ts/function';
 import type { Option } from 'fp-ts/Option';

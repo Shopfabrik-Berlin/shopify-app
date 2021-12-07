@@ -2481,7 +2481,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopfabrik/gid@workspace:^0.1.0, @shopfabrik/gid@workspace:packages/gid":
+"@shopfabrik/gid@workspace:packages/gid":
   version: 0.0.0-use.local
   resolution: "@shopfabrik/gid@workspace:packages/gid"
   dependencies:
@@ -2503,7 +2503,7 @@ __metadata:
     "@graphql-codegen/typescript": 2.4.1
     "@graphql-codegen/typescript-operations": 2.2.1
     "@graphql-typed-document-node/core": ^3.0.0
-    "@shopfabrik/gid": "workspace:^0.1.0"
+    "@shopfabrik/shopify-data": ^0.1.0
     "@types/node": 16.11.9
     axios: ^0.24.0
     cross-fetch: ^3.0.0
@@ -2520,7 +2520,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@shopfabrik/shopify-data@workspace:packages/shopify-data":
+"@shopfabrik/shopify-data@^0.1.0, @shopfabrik/shopify-data@workspace:packages/shopify-data":
   version: 0.0.0-use.local
   resolution: "@shopfabrik/shopify-data@workspace:packages/shopify-data"
   dependencies:

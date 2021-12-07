@@ -1,4 +1,4 @@
-import type { GID } from '@shopfabrik/gid';
+import type { GID } from '@shopfabrik/shopify-data';
 import { boolean, monoid, option, readerTaskEither, readonlyArray } from 'fp-ts';
 import { pipe } from 'fp-ts/function';
 import type { ClientRestPayload } from '../../../client';
