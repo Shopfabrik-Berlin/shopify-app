@@ -2520,6 +2520,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@shopfabrik/shopify-auth@workspace:packages/shopify-auth":
+  version: 0.0.0-use.local
+  resolution: "@shopfabrik/shopify-auth@workspace:packages/shopify-auth"
+  dependencies:
+    "@babel/core": 7.16.0
+    "@babel/preset-env": 7.16.4
+    "@babel/preset-typescript": 7.16.0
+    "@shopfabrik/shopify-data": ^0.1.0
+    "@types/jest": 27.0.3
+    "@types/jsonwebtoken": ^8.5.6
+    "@types/node": 16.11.9
+    fast-check: ^2.20.0
+    fp-ts: 2.11.0
+    jest: 27.4.3
+    jsonwebtoken: ^8.5.1
+    typescript: 4.4.4
+  peerDependencies:
+    fp-ts: ^2.11.0
+  languageName: unknown
+  linkType: soft
+
 "@shopfabrik/shopify-data@^0.1.0, @shopfabrik/shopify-data@workspace:packages/shopify-data":
   version: 0.0.0-use.local
   resolution: "@shopfabrik/shopify-data@workspace:packages/shopify-data"
@@ -2735,7 +2756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^8.5.0":
+"@types/jsonwebtoken@npm:^8.5.0, @types/jsonwebtoken@npm:^8.5.6":
   version: 8.5.6
   resolution: "@types/jsonwebtoken@npm:8.5.6"
   dependencies:

@@ -4,6 +4,7 @@
   "packages": {
     "packages/gid": {},
     "packages/shopify-api": {},
+    "packages/shopify-auth": {},
     "packages/shopify-data": {}
   }
 }
