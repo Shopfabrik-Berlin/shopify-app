@@ -31,6 +31,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/shopify-api"
       },
       {
+        "name": "@shopfabrik/shopify-auth",
+        "reference": "workspace:packages/shopify-auth"
+      },
+      {
         "name": "@shopfabrik/shopify-data",
         "reference": "workspace:packages/shopify-data"
       }
@@ -40,6 +44,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "fallbackExclusionList": [
       ["@shopfabrik/gid", ["workspace:packages/gid"]],
       ["@shopfabrik/shopify-api", ["workspace:packages/shopify-api"]],
+      ["@shopfabrik/shopify-auth", ["workspace:packages/shopify-auth"]],
       ["@shopfabrik/shopify-data", ["workspace:packages/shopify-data"]],
       ["shopify-app", ["workspace:."]]
     ],
@@ -4230,6 +4235,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["retry-ts", "virtual:cc4211eae27de23fd113520ffbb1bfe77c0e9fb6724f049fb09c0f08262403b96eb49feb55d10876c998ddfdf193256138ba2f604a39056955b580bbec14008c#npm:0.1.3"],
             ["ts-node", "virtual:cc4211eae27de23fd113520ffbb1bfe77c0e9fb6724f049fb09c0f08262403b96eb49feb55d10876c998ddfdf193256138ba2f604a39056955b580bbec14008c#npm:10.4.0"],
             ["ts-toolbelt", "npm:9.1.6"],
+            ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
+          ],
+          "linkType": "SOFT",
+        }]
+      ]],
+      ["@shopfabrik/shopify-auth", [
+        ["workspace:packages/shopify-auth", {
+          "packageLocation": "./packages/shopify-auth/",
+          "packageDependencies": [
+            ["@shopfabrik/shopify-auth", "workspace:packages/shopify-auth"],
+            ["@babel/core", "npm:7.16.0"],
+            ["@babel/preset-env", "virtual:2a42ff7d2170dbd5ea3c8334f2fc580e767763496d4447885769bd918d0336815cb6908185a5d0c1698b281ecd8f912566e5bc85d0b6297c25efde5cc88b9ef6#npm:7.16.4"],
+            ["@babel/preset-typescript", "virtual:2a42ff7d2170dbd5ea3c8334f2fc580e767763496d4447885769bd918d0336815cb6908185a5d0c1698b281ecd8f912566e5bc85d0b6297c25efde5cc88b9ef6#npm:7.16.0"],
+            ["@shopfabrik/shopify-data", "workspace:packages/shopify-data"],
+            ["@types/jest", "npm:27.0.3"],
+            ["@types/jsonwebtoken", "npm:8.5.6"],
+            ["@types/node", "npm:16.11.9"],
+            ["fast-check", "npm:2.20.0"],
+            ["fp-ts", "npm:2.11.0"],
+            ["jest", "virtual:2a42ff7d2170dbd5ea3c8334f2fc580e767763496d4447885769bd918d0336815cb6908185a5d0c1698b281ecd8f912566e5bc85d0b6297c25efde5cc88b9ef6#npm:27.4.3"],
+            ["jsonwebtoken", "npm:8.5.1"],
             ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
           ],
           "linkType": "SOFT",
