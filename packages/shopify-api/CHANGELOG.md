@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.4](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.3...shopify-api-v0.1.4) (2021-12-15)
+
+
+### Bug Fixes
+
+* **shopify-api:** remove circular dependencies ([58d9077](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/58d90772f170a2892d80dc5796b2c51a6bf91362))
+
 ### [0.1.3](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.2...shopify-api-v0.1.3) (2021-11-29)
 
 
