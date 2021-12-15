@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.4...shopify-api-v0.2.0) (2021-12-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **shopify-api:** 
+
+### Bug Fixes
+
+* **shopify-api:** use @shopfabrik/shopify-data ([26691cc](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/26691cc8b72879877d09545a5def5b0572667c18))
+
 ### [0.1.4](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.3...shopify-api-v0.1.4) (2021-12-15)
 
 
