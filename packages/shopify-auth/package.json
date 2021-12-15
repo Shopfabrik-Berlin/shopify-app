@@ -1,6 +1,6 @@
 {
   "name": "@shopfabrik/shopify-auth",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Shopify Authentication Utilities",
   "homepage": "https://github.com/Shopfabrik-Berlin/shopify-app",
   "bugs": {
