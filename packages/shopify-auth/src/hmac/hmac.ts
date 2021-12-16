@@ -2,19 +2,21 @@ import { shopOrigin, ShopOrigin } from '@shopfabrik/shopify-data';
 import * as crypto from 'crypto';
 import { apply, either, string } from 'fp-ts';
 import type { Either } from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
+import { identity, pipe } from 'fp-ts/function';
 import type { URLSearchParams } from 'url';
 
 export const verifyHmac: VerifyFn = verify({
   key: 'hmac',
   separator: '&',
-  normalizeArrayParams: (params) => `["${params.join('", "')}"]`,
+  encodeComponent: encodeURIComponent,
+  encodeArrayParams: (params) => `["${params.join('", "')}"]`,
 });
 
 export const verifySignature: VerifyFn = verify({
   key: 'signature',
   separator: '',
-  normalizeArrayParams: (params) => params.join(','),
+  encodeComponent: identity,
+  encodeArrayParams: (params) => params.join(','),
 });
 
 type VerifyFn = (
@@ -41,12 +43,12 @@ export class HmacError extends Error {
   }
 }
 
-type VerifyConfig = NormalizeSearchParamsConfig & {
+type VerifyConfig = EncodeSearchParamsConfig & {
   readonly separator: string;
 };
 
 function verify(config: VerifyConfig): VerifyFn {
-  const _normalizeSearchParams = normalizeSearchParams(config);
+  const _encodeSearchParams = encodeSearchParams(config);
 
   return (searchParams) => (env) => {
     return pipe(
@@ -57,7 +59,7 @@ function verify(config: VerifyConfig): VerifyFn {
       either.chain(({ hmac, shopOrigin }) => {
         return isValidPayload({
           hmac,
-          payload: _normalizeSearchParams(searchParams).join(config.separator),
+          payload: _encodeSearchParams(searchParams).join(config.separator),
           secret: env.getApiSecret(shopOrigin),
         })
           ? either.right(shopOrigin)
@@ -101,16 +103,16 @@ function getHmacFromSearch(hmacKey: string) {
   };
 }
 
-type NormalizeSearchParamsConfig = NormalizeSearchEntryConfig & {
+type EncodeSearchParamsConfig = EncodeSearchEntryConfig & {
   readonly key: string;
 };
 
-function normalizeSearchParams(config: NormalizeSearchParamsConfig) {
+function encodeSearchParams(config: EncodeSearchParamsConfig) {
   return (searchParams: URLSearchParams) => {
     const searchParamsMap = new Map(
       [...searchParams.keys()]
         .filter((key) => key !== config.key)
-        .map((key) => normalizeSearchEntry(config)(key, searchParams.getAll(key))),
+        .map((key) => encodeSearchEntry(config)(key, searchParams.getAll(key))),
     );
 
     return [...searchParamsMap.entries()]
@@ -119,23 +121,24 @@ function normalizeSearchParams(config: NormalizeSearchParamsConfig) {
   };
 }
 
-type NormalizeSearchEntryConfig = {
-  readonly normalizeArrayParams: (params: ReadonlyArray<string>) => string;
+type EncodeSearchEntryConfig = {
+  readonly encodeComponent: (component: string) => string;
+  readonly encodeArrayParams: (params: ReadonlyArray<string>) => string;
 };
 
 const ARRAY_PARAM_RX = /\[\]$/;
 
-function normalizeSearchEntry(config: NormalizeSearchEntryConfig) {
+function encodeSearchEntry(config: EncodeSearchEntryConfig) {
   return (key: string, values: ReadonlyArray<string>): readonly [string, string] => {
-    const normalizedKey = encodeURIComponent(key.replace(ARRAY_PARAM_RX, ''));
-    const normalizedValues = values.map(encodeURIComponent);
+    const encodedKey = config.encodeComponent(key.replace(ARRAY_PARAM_RX, ''));
+    const encodedValues = values.map(config.encodeComponent);
 
-    const normalizedValue =
+    const encodedValue =
       ARRAY_PARAM_RX.test(key) || values.length > 1
-        ? config.normalizeArrayParams(normalizedValues)
-        : normalizedValues[0];
+        ? config.encodeArrayParams(encodedValues)
+        : encodedValues[0];
 
-    return [normalizedKey, normalizedValue];
+    return [encodedKey, encodedValue];
   };
 }
 
