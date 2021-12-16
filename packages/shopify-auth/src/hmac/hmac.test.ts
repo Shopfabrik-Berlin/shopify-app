@@ -76,11 +76,11 @@ describe('hmac', () => {
       expect(result).toStrictEqual(either.right('test.myshopify.com'));
     });
 
-    it('validates parameters with special symbols', () => {
-      const hmac = createHmac('secret', '%25%26%3D=%25%26&shop=test.myshopify.com');
+    it('validates parameters with special symbols (encoded)', () => {
+      const hmac = createHmac('secret', '%25%26%3D=%25%26%2F&shop=test.myshopify.com');
 
       const result = verifyHmac(
-        new URLSearchParams(`%25%26%3D=%25%26&shop=test.myshopify.com&hmac=${hmac}`),
+        new URLSearchParams(`%25%26%3D=%25%26%2F&shop=test.myshopify.com&hmac=${hmac}`),
       )({
         getApiSecret: () => 'secret',
       });
@@ -183,11 +183,11 @@ describe('hmac', () => {
       expect(result).toStrictEqual(either.right('test.myshopify.com'));
     });
 
-    it('validates parameters with special symbols', () => {
-      const hmac = createHmac('secret', '%25%26%3D=%25%26shop=test.myshopify.com');
+    it('validates parameters with special symbols (decoded)', () => {
+      const hmac = createHmac('secret', '%&==%&/shop=test.myshopify.com');
 
       const result = verifySignature(
-        new URLSearchParams(`%25%26%3D=%25%26&shop=test.myshopify.com&signature=${hmac}`),
+        new URLSearchParams(`%25%26%3D=%25%26%2F&shop=test.myshopify.com&signature=${hmac}`),
       )({
         getApiSecret: () => 'secret',
       });
