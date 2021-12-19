@@ -167,17 +167,24 @@ export function modify(f: (contents: string) => string) {
     return pipe(
       get(input),
       readerTaskEither.chainW((asset) => {
+        const setOrNoopWhenNoChange = (
+          contents: string,
+          mkSetInput: (modifiedContents: string) => SetInput,
+        ): ClientRestPayload<AssetMeta> => {
+          const modifiedContents = f(contents);
+
+          if (modifiedContents === contents) {
+            return readerTaskEither.of(asset);
+          }
+
+          return set(mkSetInput(modifiedContents));
+        };
+
         if (withValueGuard.is(asset)) {
-          return set({
-            ...input,
-            value: f(asset.value),
-          });
+          return setOrNoopWhenNoChange(asset.value, (value) => ({ ...input, value }));
         }
 
-        return set({
-          ...input,
-          attachment: f(asset.attachment),
-        });
+        return setOrNoopWhenNoChange(asset.attachment, (attachment) => ({ ...input, attachment }));
       }),
     );
   };
