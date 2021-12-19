@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.2.0...shopify-api-v0.2.1) (2021-12-19)
+
+
+### Bug Fixes
+
+* **shopify-api:** short-circuit asset.modify when asset is not changed ([dbca8aa](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/dbca8aa217b6df6c192b97bb1151524db0e8fb28))
+
 ## [0.2.0](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.1.4...shopify-api-v0.2.0) (2021-12-15)
 
 
