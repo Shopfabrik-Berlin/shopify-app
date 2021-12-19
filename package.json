@@ -13,7 +13,7 @@
     "lint": "yarn lint:base .",
     "lint:base": "eslint --config .eslintrc.ci.cjs --max-warnings=0",
     "postinstallDev": "husky install",
-    "test": "yarn workspaces foreach --no-private --parallel --verbose run test",
+    "test": "yarn workspaces foreach --no-private --parallel --verbose run test --silent",
     "g:clean": "cd $INIT_CWD && git clean -dfX",
     "g:dpdm": "cd $INIT_CWD && dpdm --transform --tree false --warning false --exit-code circular:1"
   },

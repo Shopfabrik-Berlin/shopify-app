@@ -5,5 +5,6 @@
     "module": "ES2020",
     "noEmit": false,
     "outDir": "./build/esm"
-  }
+  },
+  "exclude": ["./**/*.mock.ts", "./**/*.test.ts"]
 }

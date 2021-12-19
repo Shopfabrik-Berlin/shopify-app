@@ -38,7 +38,8 @@
     "clean": "yarn g:clean",
     "dpdm": "yarn g:dpdm ./src/index.ts",
     "gen": "ts-node ./tools/codegen/codegen.ts",
-    "gen:schema": "graphql-codegen --config ./tools/schema/codegen.yml"
+    "gen:schema": "graphql-codegen --config ./tools/schema/codegen.yml",
+    "test": "jest"
   },
   "dependencies": {
     "@apollo/client": "^3.2.1",
@@ -54,6 +55,9 @@
     "ts-toolbelt": "^9.1.6"
   },
   "devDependencies": {
+    "@babel/core": "7.16.0",
+    "@babel/preset-env": "7.16.4",
+    "@babel/preset-typescript": "7.16.0",
     "@graphql-codegen/cli": "2.3.0",
     "@graphql-codegen/introspection": "2.1.0",
     "@graphql-codegen/near-operation-file-preset": "2.2.2",
@@ -61,8 +65,11 @@
     "@graphql-codegen/typed-document-node": "2.2.1",
     "@graphql-codegen/typescript": "2.4.1",
     "@graphql-codegen/typescript-operations": "2.2.1",
+    "@types/jest": "27.0.3",
     "@types/node": "16.11.9",
     "fp-ts": "2.11.0",
+    "jest": "27.4.3",
+    "msw": "0.36.3",
     "ts-node": "10.4.0",
     "typescript": "4.4.4"
   },
