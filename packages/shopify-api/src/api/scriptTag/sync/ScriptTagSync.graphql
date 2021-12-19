@@ -1,0 +1,6 @@
+fragment ScriptTagSync on ScriptTag {
+  id
+  cache
+  displayScope
+  src
+}

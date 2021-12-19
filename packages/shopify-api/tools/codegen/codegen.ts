@@ -51,7 +51,7 @@ async function run(): Promise<void> {
   );
 }
 
-const FRAGMENTS = ['Metafield', 'Shop', 'WebhookSubscription'];
+const FRAGMENTS = ['Metafield', 'ScriptTag', 'Shop', 'WebhookSubscription'];
 
 const mkTypeRx = (typeName: string): RegExp =>
   new RegExp(
