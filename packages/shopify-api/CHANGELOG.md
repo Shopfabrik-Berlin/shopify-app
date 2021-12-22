@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.2.1...shopify-api-v0.2.2) (2021-12-22)
+
+
+### Features
+
+* **shopify-api:** add api.scriptTag ([887da84](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/887da84039e2ce6edcfbbbea813f4d2afa5d1daa))
+
 ### [0.2.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.2.0...shopify-api-v0.2.1) (2021-12-19)
 
 
