@@ -1,26 +1,40 @@
-import { option, readerTaskEither } from 'fp-ts';
-import { constFalse, pipe } from 'fp-ts/function';
-import type { ClientRestPayload } from '../../../client/rest';
-import type { Asset } from '../../asset';
-import * as asset from '../../asset/Asset';
+import { rio } from '../../../utils';
+import * as asset from '../Asset';
 import type { SectionSchemaBlock } from './SectionSchema';
 import * as sectionSchema from './SectionSchema';
 
-export type SupportsAppBlocksInput = asset.FindInput;
+export type SupportsAppBlocks = rio.p.TypeFn<typeof supportsAppBlocks>;
 
-export function supportsAppBlocks(input: SupportsAppBlocksInput): ClientRestPayload<boolean> {
-  return pipe(
-    asset.find(input),
-    readerTaskEither.map(option.fold(constFalse, assetSupportsAppBlocks)),
-  );
+export const supportsAppBlocks = rio.mapEnv(
+  _supportsAppBlocks,
+  rio.sequenceEnv({
+    findAsset: asset.find,
+  }),
+);
+
+type SupportsAppBlocksEnv = rio.RemoveEnvS<{
+  findAsset: asset.Find;
+}>;
+
+async function _supportsAppBlocks(
+  env: SupportsAppBlocksEnv,
+  input: asset.Find['Input'],
+): Promise<boolean> {
+  const section = await env.findAsset(input);
+  return section ? assetSupportsAppBlocks(section) : false;
 }
 
-function assetSupportsAppBlocks(section: Asset): boolean {
-  return pipe(
-    option.fromPredicate(asset.withValueGuard.is)(section),
-    option.chainEitherK((section) => sectionSchema.sectionContentsDecoder.decode(section.value)),
-    option.fold(constFalse, (schema) => schema.blocks?.some(isAppBlockType) ?? false),
-  );
+function assetSupportsAppBlocks(section: asset.Asset): boolean {
+  if (!asset.isWithValue(section)) {
+    return false;
+  }
+
+  const schema = sectionSchema.decodeContents(section.value);
+  if (!schema) {
+    return false;
+  }
+
+  return schema.blocks?.some(isAppBlockType) ?? false;
 }
 
 const APP_BLOCK_TYPE = '@app';

@@ -1,5 +1,0 @@
-query shop {
-  shop {
-    ...Shop
-  }
-}

@@ -1,1 +1,1 @@
-export * as single from './single';
+export * from './sync';

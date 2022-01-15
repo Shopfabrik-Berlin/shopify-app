@@ -1,42 +1,29 @@
-import { gid, ShopOrigin } from '@shopfabrik/shopify-data';
-import { either } from 'fp-ts';
-import { setupServer } from 'msw/node';
-import { ClientGraphqlEnv, mkClientGraphqlEnv } from '../../../client/graphql';
-import * as scriptTagCreateMock from '../scriptTagCreate.mock';
-import * as scriptTagDeleteMock from '../scriptTagDelete.mock';
-import * as scriptTagsMock from '../scriptTags.mock';
-import { syncMinimal, SyncMinimalPayload } from './sync';
-
-const server = setupServer();
-
-beforeAll(() => server.listen());
-
-afterEach(() => server.resetHandlers());
-
-afterAll(() => server.close());
+import { gid } from '@shopfabrik/shopify-data';
+import { _sync, _Sync } from './sync';
 
 describe('api', () => {
   describe('scriptTag', () => {
-    describe('syncMinimal', () => {
-      const scriptTagId = gid.shopify.unsafeEncode('ScriptTag')('001');
-
-      const env = (): ClientGraphqlEnv => {
-        return mkClientGraphqlEnv({
-          accessToken: 'accessToken',
-          shopOrigin: 'test.myshopify.com' as ShopOrigin,
-        });
-      };
-
+    describe('sync', () => {
       it('creates missing ScriptTags', async () => {
-        server.use(
-          scriptTagsMock.mockConnection([]),
+        const scriptTagId = gid.shopify.unsafeEncode('ScriptTag')('001');
 
-          scriptTagCreateMock.mockRight({
-            id: scriptTagId,
-          }),
-        );
+        const env: _Sync['Env'] = {
+          createScriptTag: async ({ input }) => {
+            return {
+              id: scriptTagId,
+              ...input,
+            } as never;
+          },
+          listScriptTags: async () => {
+            return [];
+          },
+          removeScriptTag: async ({ id }) => {
+            return id;
+          },
+        };
 
-        const result = await syncMinimal({
+        const result = await _sync(env, {
+          limit: 10,
           scriptTags: [
             {
               cache: true,
@@ -44,10 +31,9 @@ describe('api', () => {
               src: 'https://test.com',
             },
           ],
-          limit: 10,
-        })(env())();
+        });
 
-        expect(either.toUnion(result)).toStrictEqual<SyncMinimalPayload>({
+        expect(result).toStrictEqual<_Sync['Output']>({
           deletedScriptTagIds: [],
           scriptTags: [
             {
@@ -61,25 +47,26 @@ describe('api', () => {
       });
 
       it('removes extra ScriptTags', async () => {
-        server.use(
-          scriptTagsMock.mockConnection([
-            {
-              id: scriptTagId,
-              cache: false,
-              displayScope: 'ALL',
-              src: 'https://invalid.com',
-            },
-          ]),
+        const scriptTagId = gid.shopify.unsafeEncode('ScriptTag')('001');
 
-          scriptTagDeleteMock.mockRight(scriptTagId),
-        );
+        const env: _Sync['Env'] = {
+          createScriptTag: async () => {
+            return {} as never;
+          },
+          listScriptTags: async () => {
+            return [{ id: scriptTagId }] as never;
+          },
+          removeScriptTag: async ({ id }) => {
+            return id;
+          },
+        };
 
-        const result = await syncMinimal({
+        const result = await _sync(env, {
           scriptTags: [],
           limit: 10,
-        })(env())();
+        });
 
-        expect(either.toUnion(result)).toStrictEqual<SyncMinimalPayload>({
+        expect(result).toStrictEqual<_Sync['Output']>({
           deletedScriptTagIds: [scriptTagId],
           scriptTags: [],
         });

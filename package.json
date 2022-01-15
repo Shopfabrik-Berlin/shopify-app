@@ -18,17 +18,24 @@
     "g:dpdm": "cd $INIT_CWD && dpdm --transform --tree false --warning false --exit-code circular:1"
   },
   "devDependencies": {
-    "@commitlint/cli": "16.2.1",
+    "@commitlint/cli": "16.2.3",
     "@commitlint/config-conventional": "16.2.1",
-    "@typescript-eslint/eslint-plugin": "5.13.0",
-    "@typescript-eslint/parser": "5.13.0",
+    "@typescript-eslint/eslint-plugin": "5.16.0",
+    "@typescript-eslint/parser": "5.16.0",
     "dpdm": "3.8.0",
-    "eslint": "8.10.0",
+    "eslint": "8.11.0",
     "eslint-config-prettier": "8.5.0",
     "husky": "7.0.4",
-    "lint-staged": "12.3.5",
-    "prettier": "2.5.1",
+    "lint-staged": "12.3.7",
+    "prettier": "2.6.0",
     "prettier-plugin-organize-imports": "2.3.4",
     "typescript": "4.6.2"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "graphql": "^16.0.0"
+      }
+    }
   }
 }

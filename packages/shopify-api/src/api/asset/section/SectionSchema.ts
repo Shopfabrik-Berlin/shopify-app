@@ -1,66 +1,38 @@
-import { either, json } from 'fp-ts';
-import { pipe } from 'fp-ts/function';
-import type { Decoder } from 'io-ts/Decoder';
-import * as decoder from 'io-ts/Decoder';
-import type { Guard } from 'io-ts/Guard';
-import * as guard from 'io-ts/Guard';
+import * as s from 'superstruct';
 
 // https://shopify.dev/themes/architecture/sections/section-schema
 
-export type SectionSchema = {
-  readonly name: string;
-  readonly blocks?: ReadonlyArray<SectionSchemaBlock>;
+export type SectionSchemaBlock = s.Infer<ReturnType<typeof blockStruct>>;
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const blockStruct = () => {
+  return s.object({
+    type: s.string(),
+    limit: s.optional(s.number()),
+    name: s.optional(s.string()),
+  });
 };
 
-export type SectionSchemaBlock = {
-  readonly type: string;
-  readonly limit?: number;
-  // Shopify docs state that `name` is a required field, although in practice it is not
-  readonly name?: string;
+export type SectionSchema = s.Infer<ReturnType<typeof struct>>;
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const struct = () => {
+  return s.object({
+    name: s.string(),
+    blocks: s.optional(s.array(blockStruct())),
+  });
 };
-
-const blockGuard: Guard<unknown, SectionSchemaBlock> = pipe(
-  guard.struct({
-    type: guard.string,
-  }),
-  guard.intersect(
-    guard.partial({
-      limit: guard.number,
-      name: guard.string,
-    }),
-  ),
-);
-
-const _guard: Guard<unknown, SectionSchema> = pipe(
-  guard.struct({
-    name: guard.string,
-  }),
-  guard.intersect(
-    guard.partial({
-      blocks: guard.array(blockGuard),
-    }),
-  ),
-);
-
-export { _guard as guard };
-
-const _decoder: Decoder<unknown, SectionSchema> = decoder.fromGuard(_guard, 'SectionSchema');
 
 const SECTION_SCHEMA_RX = /\{%\s+schema\s+%\}([\s\S]*?)\{%\s+endschema\s+%\}/m;
 
-export const sectionContentsDecoder: Decoder<string, SectionSchema> = {
-  decode: (sectionContents) => {
-    return pipe(
-      either.fromNullable(decoder.error(sectionContents, 'section contents with schema'))(
-        SECTION_SCHEMA_RX.exec(sectionContents)?.[1],
-      ),
-      either.chain((textSchema) => {
-        return pipe(
-          json.parse(textSchema),
-          either.mapLeft(() => decoder.error(textSchema, 'JSON schema')),
-        );
-      }),
-      either.chain(_decoder.decode),
-    );
-  },
-};
+export function decodeContents(contents: string): SectionSchema | null {
+  const textSchema = SECTION_SCHEMA_RX.exec(contents)?.[1];
+  if (!textSchema) {
+    return null;
+  }
+
+  try {
+    const sectionSchema = JSON.parse(textSchema) as unknown;
+    return s.mask(sectionSchema, struct());
+  } catch {
+    return null;
+  }
+}

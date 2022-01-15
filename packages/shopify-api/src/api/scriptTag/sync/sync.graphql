@@ -1,0 +1,35 @@
+query scriptTags($first: Int!) {
+  scriptTags(first: $first) {
+    edges {
+      node {
+        ...ScriptTagSync
+      }
+    }
+  }
+}
+
+mutation scriptTagCreate($input: ScriptTagInput!) {
+  scriptTagCreate(input: $input) {
+    scriptTag {
+      ...ScriptTagSync
+    }
+
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+mutation scriptTagDelete($id: ID!) {
+  scriptTagDelete(id: $id) {
+    deletedScriptTagId
+  }
+}
+
+fragment ScriptTagSync on ScriptTag {
+  id
+  cache
+  displayScope
+  src
+}

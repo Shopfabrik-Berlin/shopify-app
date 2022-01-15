@@ -1,69 +1,79 @@
 import type { GID } from '@shopfabrik/shopify-data';
-import { boolean, monoid, option, readerTaskEither, readonlyArray } from 'fp-ts';
-import { pipe } from 'fp-ts/function';
-import type { ClientRestPayload } from '../../../client';
-import type { Asset } from '../Asset';
+import { rio } from '../../../utils';
 import * as asset from '../Asset';
 import * as section from '../section';
 import * as jsonTemplate from './JsonTemplate';
 
-export type SupportsAppBlocksInput = {
+export type SupportsAppBlocks = rio.p.TypeFn<typeof supportsAppBlocks>;
+
+export const supportsAppBlocks = rio.mapEnv(
+  _supportsAppBlocks,
+  rio.sequenceEnv({
+    findAsset: asset.find,
+    sectionSupportsAppBlocks: section.supportsAppBlocks,
+  }),
+);
+
+type SupportsAppBlocksEnv = rio.RemoveEnvS<{
+  findAsset: asset.Find;
+  sectionSupportsAppBlocks: section.SupportsAppBlocks;
+}>;
+
+type SupportsAppBlocksInput = {
   readonly themeId: GID;
   readonly templateName: string;
 };
 
-export function supportsAppBlocks(input: SupportsAppBlocksInput): ClientRestPayload<boolean> {
-  return pipe(
-    asset.find({
-      themeId: input.themeId,
-      key: `templates/${input.templateName}.json`,
-    }),
-    readerTaskEither.chain(
-      option.fold(
-        () => readerTaskEither.of(false),
-        (template) => {
-          return assetSupportsAppBlocks({
-            themeId: input.themeId,
-            template,
-          });
-        },
-      ),
-    ),
-  );
+async function _supportsAppBlocks(
+  env: SupportsAppBlocksEnv,
+  input: SupportsAppBlocksInput,
+): Promise<boolean> {
+  const template = await env.findAsset({
+    themeId: input.themeId,
+    key: `templates/${input.templateName}.json`,
+  });
+  if (!template) {
+    return false;
+  }
+
+  return assetSupportsAppBlocks(env, {
+    themeId: input.themeId,
+    template,
+  });
 }
 
 type AssetSupportsAppBlocksInput = {
   readonly themeId: GID;
-  readonly template: Asset;
+  readonly template: asset.Asset;
 };
 
-function assetSupportsAppBlocks(input: AssetSupportsAppBlocksInput): ClientRestPayload<boolean> {
-  return pipe(
-    findTemplateMainSectionKeys(input.template),
-    readerTaskEither.traverseArray((mainSectionKey) => {
-      return section.supportsAppBlocks({
+async function assetSupportsAppBlocks(
+  env: SupportsAppBlocksEnv,
+  input: AssetSupportsAppBlocksInput,
+): Promise<boolean> {
+  const sectionsAppBlockSupport = await Promise.all(
+    findTemplateMainSectionKeys(input.template).map((mainSectionKey) => {
+      return env.sectionSupportsAppBlocks({
         themeId: input.themeId,
         key: mainSectionKey,
       });
     }),
-    readerTaskEither.map(monoid.concatAll(boolean.MonoidAny)),
   );
+
+  return sectionsAppBlockSupport.some(Boolean);
 }
 
-function findTemplateMainSectionKeys(template: Asset): ReadonlyArray<string> {
-  return pipe(
-    option.fromPredicate(asset.withValueGuard.is)(template),
-    option.chainEitherK((template) => jsonTemplate.templateContentDecoder.decode(template.value)),
-    option.map((_jsonTemplate) => {
-      return pipe(
-        Object.entries(_jsonTemplate.sections),
-        readonlyArray.filterMap(([id, section]) => {
-          return id === 'main' || section.type.startsWith('main-')
-            ? option.some(`sections/${section.type}.liquid`)
-            : option.none;
-        }),
-      );
-    }),
-    option.getOrElse((): ReadonlyArray<string> => []),
-  );
+function findTemplateMainSectionKeys(template: asset.Asset): string[] {
+  if (!asset.isWithValue(template)) {
+    return [];
+  }
+
+  const _jsonTemplate = jsonTemplate.decodeContent(template.value);
+  if (!_jsonTemplate) {
+    return [];
+  }
+
+  return Object.entries(_jsonTemplate.sections)
+    .filter(([id, section]) => id === 'main' || section.type.startsWith('main-'))
+    .map(([, section]) => `sections/${section.type}.liquid`);
 }
