@@ -1,11 +1,6 @@
+export type { GraphQLClient, GraphQLClientConfig, GraphQLRequest } from './client';
 export * from './graphql';
-export * as error from './GraphqlRequestError';
-export type {
-  GraphQLRequestError,
-  GraphQLRequestErrorConfig,
-  PrintedGraphQLRequestConfig,
-  UserError,
-} from './GraphqlRequestError';
+export * from './GraphQLResponseError';
+export * as rio from './GraphQLRIO';
 export * as pagination from './pagination';
 export type { PageInfo, PaginationConnection, PaginationEdge } from './pagination';
-export * from './request';

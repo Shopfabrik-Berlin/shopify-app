@@ -1,4 +1,2 @@
-export * from './request';
+export type { RestClient, RestClientConfig, RestFetchFn } from './client';
 export * from './rest';
-export * as error from './RestRequestError';
-export type { RestRequestError, RestRequestErrorConfig } from './RestRequestError';

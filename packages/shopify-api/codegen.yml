@@ -1,0 +1,28 @@
+schema: ./tools/schema/schema.json
+
+generates:
+  ./src/schema.generated.ts:
+    plugins:
+      - typescript
+
+  ./src:
+    documents: ./src/**/*.graphql
+    preset: near-operation-file
+    presetConfig:
+      baseTypesPath: schema.generated.ts
+    plugins:
+      - typed-document-node
+      - typescript-operations
+
+  ./src/client/graphql/fragment-matcher.generated.ts:
+    plugins:
+      - fragment-matcher
+
+config:
+  enumsAsConst: true
+  immutableTypes: true
+  preResolveTypes: false
+  useTypeImports: true
+  scalars:
+    ID: "@shopfabrik/shopify-data#GID"
+    URL: string

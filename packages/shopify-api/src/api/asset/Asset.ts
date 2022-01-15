@@ -1,11 +1,10 @@
-import { getDataLoader } from '@dddenis/dataloader-fp';
 import { GID, gid } from '@shopfabrik/shopify-data';
-import { either, option, readerTask, readerTaskEither, task, taskEither } from 'fp-ts';
-import { constFalse, constTrue, pipe } from 'fp-ts/function';
-import type { Option } from 'fp-ts/Option';
-import type { Guard } from 'io-ts/Guard';
-import type { O } from 'ts-toolbelt';
-import { ClientRestEnv, ClientRestPayload, rest, RestRequestError } from '../../client';
+import type { RequireExactlyOne } from 'type-fest';
+import * as cache from '../../cache';
+import { rest } from '../../client';
+import { HttpResponseError } from '../../client/fetch';
+import type { RestClienEnv } from '../../client/rest';
+import { rio } from '../../utils';
 
 export type Asset = AssetWithAttachment | AssetWithValue;
 
@@ -28,181 +27,193 @@ export type AssetMeta = {
   readonly updated_at: string;
 };
 
-export const withValueGuard: Guard<Asset, AssetWithValue> = {
-  is: (asset): asset is AssetWithValue => 'value' in asset && typeof asset.value === 'string',
-};
-
-type ListRequestPayload = {
-  readonly assets: ReadonlyArray<AssetMeta>;
-};
-
-const assetMetaDataLoader = getDataLoader<
-  ClientRestEnv,
-  RestRequestError,
-  GID,
-  ReadonlyArray<AssetMeta>
->({
-  batchLoad: (themeIds) => (env) => {
-    return pipe(
-      themeIds,
-      task.traverseArray((themeId) => {
-        return pipe(
-          env.shopify.client.rest<ListRequestPayload>({
-            url: `/themes/${gid.getId(themeId)}/assets.json`,
-            method: 'GET',
-          }),
-          taskEither.map((payload) => payload.assets),
-        );
-      }),
-      task.map(either.right),
-    );
-  },
-});
-
-export function list(themeId: GID): ClientRestPayload<ReadonlyArray<AssetMeta>> {
-  return assetMetaDataLoader.load(themeId);
-}
-
 type AssetInput = {
   readonly themeId: GID;
   readonly key: string;
 };
 
-type GetRequestPayload = {
-  readonly asset: Asset;
+export function isWithValue(asset: Asset): asset is AssetWithValue {
+  return 'value' in asset && typeof asset.value === 'string';
+}
+
+const AssetMetaSymbol = Symbol('AssetMeta');
+
+export function getAssetMetaCache(env: cache.CacheEnv): cache.Cache<GID, Promise<AssetMeta[]>> {
+  return cache.getStore(env).getCache(AssetMetaSymbol);
+}
+
+const AssetSymbol = Symbol('Asset');
+
+export function getAssetCache(env: cache.CacheEnv): cache.Cache<AssetInput, Promise<Asset>> {
+  return cache.normalize(
+    cache.getStore(env).getCache<string, Promise<Asset>>(AssetSymbol),
+    createAssetCacheKey,
+  );
+}
+
+function createAssetCacheKey(input: AssetInput): string {
+  return `${gid.getId(input.themeId)}_${input.key}`;
+}
+
+export type List = rio.p.TypeFn<typeof list>;
+
+export const list = cache.withCache(getAssetMetaCache, _list);
+
+type FetchListPayload = {
+  assets: AssetMeta[];
 };
 
-const assetDataLoader = getDataLoader<ClientRestEnv, RestRequestError, AssetInput, Asset, string>({
-  batchLoad: (inputs) => (env) => {
-    return pipe(
-      inputs,
-      task.traverseArray((input) => {
-        return pipe(
-          env.shopify.client.rest<GetRequestPayload>({
-            url: `/themes/${gid.getId(input.themeId)}/assets.json?asset[key]=${input.key}`,
-            method: 'GET',
-          }),
-          taskEither.map((payload) => payload.asset),
-        );
-      }),
-      task.map(either.right),
+async function _list(env: RestClienEnv, themeId: GID): Promise<AssetMeta[]> {
+  const data = await rest
+    .getClient(env)
+    .fetch<FetchListPayload>(`/themes/${gid.getId(themeId)}/assets.json`);
+  return data.assets;
+}
+
+export type Get = rio.p.TypeFn<typeof get>;
+
+export const get = cache.withCache(getAssetCache, _get);
+
+type GetFetchPayload = {
+  asset: Asset;
+};
+
+async function _get(env: RestClienEnv, input: AssetInput): Promise<Asset> {
+  const data = await rest
+    .getClient(env)
+    .fetch<GetFetchPayload>(
+      `/themes/${gid.getId(input.themeId)}/assets.json?asset[key]=${input.key}`,
     );
-  },
-  options: {
-    cacheKeyFn: (input) => `${input.themeId}_${input.key}`,
-  },
+  return data.asset;
+}
+
+export type Find = rio.p.TypeFn<typeof find>;
+
+export const find = rio.mapEnv(_find, rio.sequenceEnv({ get }));
+
+type _FindEnv = rio.RemoveEnvS<{
+  get: Get;
+}>;
+
+async function _find(env: _FindEnv, input: Get['Input']): Promise<Asset | null> {
+  try {
+    return await env.get(input);
+  } catch (error) {
+    if (HttpResponseError.is(error) && error.response.status === 404) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export type Exists = rio.p.TypeFn<typeof exists>;
+
+export const exists = rio.mapEnv(_exists, rio.sequenceEnv({ find }));
+
+type _ExistsEnv = rio.RemoveEnvS<{
+  find: Find;
+}>;
+
+async function _exists(env: _ExistsEnv, input: Find['Input']): Promise<boolean> {
+  try {
+    const asset = await env.find(input);
+    return !!asset;
+  } catch (error) {
+    // demo themes will return 401
+    if (HttpResponseError.is(error) && error.response.status === 401) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+export type Set = rio.p.TypeFn<typeof set>;
+
+export const set = cache.withCacheEffect(_set, (env, input) => {
+  getAssetCache(env).delete(input);
+  getAssetMetaCache(env).delete(input.themeId);
 });
 
-export type GetInput = AssetInput;
+type SetInput = AssetInput & RequireExactlyOne<SetInputValue, keyof SetInputValue>;
 
-export function get(input: GetInput): ClientRestPayload<Asset> {
-  return assetDataLoader.load(input);
-}
-
-export type FindInput = AssetInput;
-
-export function find(input: FindInput): ClientRestPayload<Option<Asset>> {
-  return pipe(get(input), readerTask.map(rest.error.leftToOption(rest.error.isStatus(404))));
-}
-
-export type ExistsInput = AssetInput;
-
-export function exists(input: ExistsInput): ClientRestPayload<boolean> {
-  return pipe(find(input), readerTaskEither.map(option.fold(constFalse, constTrue)));
-}
-
-export type SetInput = AssetInput & O.Either<SetRequestInputValue, keyof SetRequestInputValue>;
-
-type SetRequestInput = {
-  readonly asset: {
-    readonly key: string;
-  } & Partial<SetRequestInputValue>;
-};
-
-type SetRequestInputValue = {
+type SetInputValue = {
   readonly value: string;
   readonly attachment: string;
   readonly src: string;
   readonly source_key: string;
 };
 
-type SetRequestPayload = {
-  readonly asset: AssetMeta;
+type SetFetchPayload = {
+  asset: AssetMeta;
 };
 
-export function set(input: SetInput): ClientRestPayload<AssetMeta, SetRequestInput> {
-  return (env) => {
-    return pipe(
-      env.shopify.client.rest<SetRequestPayload, SetRequestInput>({
-        url: `/themes/${gid.getId(input.themeId)}/assets.json`,
-        method: 'PUT',
-        data: {
-          asset: {
-            key: input.key,
-            attachment: input.attachment,
-            source_key: input.source_key,
-            src: input.src,
-            value: input.value,
-          },
-        },
-      }),
-      taskEither.map((payload) => {
-        assetMetaDataLoader.clear(input.themeId)(env);
-
-        assetDataLoader.clear({
-          themeId: input.themeId,
+async function _set(env: RestClienEnv, input: SetInput): Promise<AssetMeta> {
+  const data = await rest
+    .getClient(env)
+    .fetch<SetFetchPayload>(`/themes/${gid.getId(input.themeId)}/assets.json`, {
+      method: 'PUT',
+      body: {
+        asset: {
           key: input.key,
-        })(env);
+          attachment: input.attachment,
+          source_key: input.source_key,
+          src: input.src,
+          value: input.value,
+        },
+      },
+    });
 
-        return payload.asset;
-      }),
-    );
-  };
+  return data.asset;
 }
 
-export type ModifyInput = AssetInput;
+export type Modify = rio.p.TypeFn<typeof modify>;
 
-export function modify(f: (contents: string) => string) {
-  return (input: ModifyInput): ClientRestPayload<AssetMeta> => {
-    return pipe(
-      get(input),
-      readerTaskEither.chainW((asset) => {
-        const setOrNoopWhenNoChange = (
-          contents: string,
-          mkSetInput: (modifiedContents: string) => SetInput,
-        ): ClientRestPayload<AssetMeta> => {
-          const modifiedContents = f(contents);
+export const modify = rio.mapEnv(_modify, rio.sequenceEnv({ get, set }));
 
-          if (modifiedContents === contents) {
-            return readerTaskEither.of(asset);
-          }
+type ModifyEnv = rio.RemoveEnvS<{
+  get: Get;
+  set: Set;
+}>;
 
-          return set(mkSetInput(modifiedContents));
-        };
+type ModifyInput = AssetInput & {
+  modifyFn: (contents: string) => string;
+};
 
-        if (withValueGuard.is(asset)) {
-          return setOrNoopWhenNoChange(asset.value, (value) => ({ ...input, value }));
-        }
+async function _modify(env: ModifyEnv, input: ModifyInput): Promise<AssetMeta> {
+  const asset = await env.get(input);
 
-        return setOrNoopWhenNoChange(asset.attachment, (attachment) => ({ ...input, attachment }));
-      }),
-    );
-  };
+  const { contents, createSetInput } = isWithValue(asset)
+    ? {
+        contents: asset.value,
+        createSetInput: (value: string) => ({ ...input, value }),
+      }
+    : {
+        contents: asset.attachment,
+        createSetInput: (attachment: string) => ({ ...input, attachment }),
+      };
+
+  const modifiedContents = input.modifyFn(contents);
+
+  if (modifiedContents === contents) {
+    return Promise.resolve(asset);
+  }
+
+  return env.set(createSetInput(modifiedContents));
 }
 
-export type RemoveInput = AssetInput;
+export type Remove = rio.p.TypeFn<typeof remove>;
 
-export function remove(input: RemoveInput): ClientRestPayload<void> {
-  return (env) => {
-    return pipe(
-      env.shopify.client.rest({
-        url: `/themes/${gid.getId(input.themeId)}/assets.json?asset[key]=${input.key}`,
-        method: 'DELETE',
-      }),
-      taskEither.map(() => {
-        assetMetaDataLoader.clear(input.themeId)(env);
-        assetDataLoader.clear(input);
-      }),
-    );
-  };
+export const remove = cache.withCacheEffect(_remove, (env, input) => {
+  getAssetCache(env).delete(input);
+  getAssetMetaCache(env).delete(input.themeId);
+});
+
+async function _remove(env: RestClienEnv, input: AssetInput): Promise<void> {
+  await rest
+    .getClient(env)
+    .fetch(`/themes/${gid.getId(input.themeId)}/assets.json?asset[key]=${input.key}`, {
+      method: 'DELETE',
+    });
 }

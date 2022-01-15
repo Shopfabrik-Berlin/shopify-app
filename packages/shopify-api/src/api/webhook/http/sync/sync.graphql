@@ -1,0 +1,43 @@
+query webhookSubscriptions($first: Int!, $topics: [WebhookSubscriptionTopic!]!) {
+  webhookSubscriptions(first: $first, topics: $topics) {
+    edges {
+      node {
+        ...HttpWebhookSubscriptionSync
+      }
+    }
+  }
+}
+
+mutation webhookSubscriptionCreate(
+  $topic: WebhookSubscriptionTopic!
+  $webhookSubscription: WebhookSubscriptionInput!
+) {
+  webhookSubscriptionCreate(topic: $topic, webhookSubscription: $webhookSubscription) {
+    webhookSubscription {
+      ...HttpWebhookSubscriptionSync
+    }
+
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+mutation webhookSubscriptionDelete($id: ID!) {
+  webhookSubscriptionDelete(id: $id) {
+    deletedWebhookSubscriptionId
+  }
+}
+
+fragment HttpWebhookSubscriptionSync on WebhookSubscription {
+  id
+  topic
+
+  endpoint {
+    __typename
+    ... on WebhookHttpEndpoint {
+      callbackUrl
+    }
+  }
+}

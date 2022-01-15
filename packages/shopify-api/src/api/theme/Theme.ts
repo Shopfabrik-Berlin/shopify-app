@@ -1,9 +1,8 @@
-import { getDataLoader } from '@dddenis/dataloader-fp';
-import { GID, gid } from '@shopfabrik/shopify-data';
-import { either, readerTask, task, taskEither } from 'fp-ts';
-import { pipe } from 'fp-ts/function';
-import type { Option } from 'fp-ts/Option';
-import { ClientRestEnv, ClientRestPayload, rest, RestRequestError } from '../../client';
+import { gid, GID } from '@shopfabrik/shopify-data';
+import * as cache from '../../cache';
+import { rest, RestClienEnv } from '../../client';
+import { HttpResponseError } from '../../client/fetch';
+import { rio } from '../../utils';
 
 export type Theme = {
   readonly id: number;
@@ -17,58 +16,68 @@ export type Theme = {
   readonly updated_at: string;
 };
 
-type GetRequestPayload = {
-  readonly theme: Theme;
-};
+const AllThemesSymbol = Symbol('AllThemes');
 
-const dataLoader = getDataLoader<ClientRestEnv, RestRequestError, GID, Theme>({
-  batchLoad: (ids) => (env) => {
-    return pipe(
-      ids,
-      task.traverseArray((id) => {
-        return pipe(
-          env.shopify.client.rest<GetRequestPayload>({
-            url: `/themes/${gid.getId(id)}.json`,
-            method: 'GET',
-          }),
-          taskEither.map((payload) => payload.theme),
-        );
-      }),
-      task.map(either.right),
-    );
-  },
-});
-
-export function get(id: GID): ClientRestPayload<Theme> {
-  return dataLoader.load(id);
+export function getAllThemesCache(env: cache.CacheEnv): cache.Cache<void, Promise<Theme[]>> {
+  return cache.getStore(env).getCache(AllThemesSymbol);
 }
 
-export function find(id: GID): ClientRestPayload<Option<Theme>> {
-  return pipe(get(id), readerTask.map(rest.error.leftToOption(rest.error.isStatus(404))));
+const ThemeSymbol = Symbol('Theme');
+
+export function getThemeCache(env: cache.CacheEnv): cache.Cache<GID, Promise<Theme>> {
+  return cache.getStore(env).getCache(ThemeSymbol);
 }
 
-type ListRequestPayload = {
-  readonly themes: ReadonlyArray<Theme>;
+export type List = rio.p.TypeFn<typeof _list>;
+
+export const list = cache.withCacheEffect(
+  cache.withCache(getAllThemesCache, _list),
+  (env, _, themes) => {
+    const themeCache = getThemeCache(env);
+    for (const theme of themes) {
+      themeCache.set(theme.admin_graphql_api_id, Promise.resolve(theme));
+    }
+  },
+);
+
+type FetchListPayload = {
+  themes: Theme[];
 };
 
-const allDataLoader = getDataLoader<ClientRestEnv, RestRequestError, 'all', ReadonlyArray<Theme>>({
-  batchLoad: () => (env) => {
-    return pipe(
-      env.shopify.client.rest<ListRequestPayload>({
-        url: '/themes.json',
-        method: 'GET',
-      }),
-      taskEither.map((payload) => {
-        payload.themes.forEach((theme) => {
-          dataLoader.prime(theme.admin_graphql_api_id)(either.right(theme))(env);
-        });
+async function _list(env: RestClienEnv): Promise<Theme[]> {
+  const data = await rest.getClient(env).fetch<FetchListPayload>(`/themes.json`);
+  return data.themes;
+}
 
-        return [either.right(payload.themes)];
-      }),
-    );
-  },
-});
+export type Get = rio.p.TypeFn<typeof get>;
 
-export function list(): ClientRestPayload<ReadonlyArray<Theme>> {
-  return allDataLoader.load('all');
+export const get = cache.withCache(getThemeCache, _get);
+
+type GetFetchPayload = {
+  theme: Theme;
+};
+
+async function _get(env: RestClienEnv, id: GID): Promise<Theme> {
+  const data = await rest.getClient(env).fetch<GetFetchPayload>(`/themes/${gid.getId(id)}.json`);
+  return data.theme;
+}
+
+export type Find = rio.p.TypeFn<typeof find>;
+
+export const find = rio.mapEnv(_find, rio.sequenceEnv({ get }));
+
+type _FindEnv = rio.RemoveEnvS<{
+  get: Get;
+}>;
+
+async function _find(env: _FindEnv, id: GID): Promise<Theme | null> {
+  try {
+    return await env.get(id);
+  } catch (error) {
+    if (HttpResponseError.is(error) && error.response.status === 404) {
+      return null;
+    }
+
+    throw error;
+  }
 }

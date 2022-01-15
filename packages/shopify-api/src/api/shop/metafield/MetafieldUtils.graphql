@@ -1,0 +1,34 @@
+query shopId {
+  shop {
+    id
+  }
+}
+
+query shopMetafield($namespace: String!, $key: String!) {
+  shop {
+    id
+    metafield(namespace: $namespace, key: $key) {
+      ...Metafield
+    }
+  }
+}
+
+mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+  metafieldsSet(metafields: $metafields) {
+    metafields {
+      ...Metafield
+    }
+
+    userErrors {
+      code
+      field
+      message
+    }
+  }
+}
+
+mutation metafieldDelete($input: MetafieldDeleteInput!) {
+  metafieldDelete(input: $input) {
+    deletedId
+  }
+}

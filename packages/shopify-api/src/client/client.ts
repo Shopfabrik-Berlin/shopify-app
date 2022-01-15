@@ -1,23 +1,19 @@
-import { ClientGraphqlEnv, mkClientGraphqlEnv } from './graphql';
-import { ClientRestEnv, mkClientRestEnv } from './rest';
+import type { ShopOrigin } from '@shopfabrik/shopify-data';
+import type * as fetch from './fetch';
+import * as graphql from './graphql';
+import * as rest from './rest';
 
-export type ClientEnv = ClientGraphqlEnv & ClientRestEnv;
+export type ClientEnv = graphql.GraphQLClientEnv & rest.RestClienEnv;
 
-export type ClientConfig = {
-  readonly accessToken: string;
-  readonly shopOrigin: string;
+export type ClientEnvConfig = {
+  accessToken: string;
+  fetch: fetch.FetchFn;
+  shopOrigin: ShopOrigin;
 };
 
-export function mkClientEnv(config: ClientConfig): ClientEnv {
-  const restEnv = mkClientRestEnv(config);
-
+export function createEnv(config: ClientEnvConfig): ClientEnv {
   return {
-    getDataLoader: restEnv.getDataLoader,
-    shopify: {
-      client: {
-        graphql: mkClientGraphqlEnv(config).shopify.client.graphql,
-        rest: restEnv.shopify.client.rest,
-      },
-    },
+    ...graphql.createEnv(config),
+    ...rest.createEnv(config),
   };
 }

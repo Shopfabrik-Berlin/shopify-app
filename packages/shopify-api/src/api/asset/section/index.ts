@@ -1,3 +1,4 @@
 export * as schema from './SectionSchema';
 export type { SectionSchema, SectionSchemaBlock } from './SectionSchema';
-export * from './supportsAppBlocks';
+export { supportsAppBlocks } from './supportsAppBlocks';
+export type { SupportsAppBlocks } from './supportsAppBlocks';

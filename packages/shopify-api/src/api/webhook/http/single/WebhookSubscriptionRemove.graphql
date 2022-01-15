@@ -1,3 +1,0 @@
-fragment WebhookSubscriptionRemove on WebhookSubscription {
-  id
-}
