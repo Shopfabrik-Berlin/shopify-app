@@ -14,5 +14,11 @@ module.exports = {
         '@typescript-eslint/unbound-method': [2, { ignoreStatic: true }],
       },
     },
+    {
+      files: ['*.test.ts', '*.test.tsx'],
+      rules: {
+        '@typescript-eslint/require-await': [0],
+      },
+    },
   ],
 };

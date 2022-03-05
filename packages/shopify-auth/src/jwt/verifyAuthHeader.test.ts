@@ -1,7 +1,5 @@
 import type { ShopOrigin } from '@shopfabrik/shopify-data';
 import * as fc from 'fast-check';
-import { either, taskEither } from 'fp-ts';
-import { pipe } from 'fp-ts/function';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import type { ApiCredentials } from '../apiCredentials';
 import { sign } from './jwt';
@@ -13,47 +11,66 @@ const defaultCredentials: ApiCredentials = {
   secret: 'secret',
 };
 
-const defaultEnv: VerifyAuthHeaderEnv = {
-  getApiSecret: () => defaultCredentials.secret,
-};
+const getApiSecret: VerifyAuthHeaderEnv['getApiSecret'] = () => defaultCredentials.secret;
 
-const mkAuthHeader = (shopOrigin: string): Promise<string> => {
-  return pipe(
-    sign({ shopOrigin: shopOrigin as ShopOrigin }, { noTimestamp: true })(defaultCredentials),
-    taskEither.map((token) => `Bearer ${token}`),
-    taskEither.getOrElse((error) => () => Promise.reject(error)),
-  )();
+const createAuthHeader = async (shopOrigin: string): Promise<string> => {
+  const token = await sign({
+    credentials: defaultCredentials,
+    shopOrigin: shopOrigin as ShopOrigin,
+    options: {
+      noTimestamp: true,
+    },
+  });
+
+  return `Bearer ${token}`;
 };
 
 describe('jwt', () => {
   describe('verifyAuthHeader', () => {
-    it('returns JsonWebTokenError when header is missing', async () => {
-      const result = await verifyAuthHeader()(defaultEnv)();
+    it('returns JsonWebTokenError when header is missing', () => {
+      const result = verifyAuthHeader({
+        getApiSecret,
+      });
 
-      expect(either.toUnion(result)).toBeInstanceOf(JsonWebTokenError);
+      return expect(result).rejects.toBeInstanceOf(JsonWebTokenError);
     });
 
-    it('returns JsonWebTokenError when header is invalid', async () => {
-      const result = await verifyAuthHeader('xxx')(defaultEnv)();
+    it('returns JsonWebTokenError when header is invalid', () => {
+      const result = verifyAuthHeader(
+        {
+          getApiSecret,
+        },
+        'xxx',
+      );
 
-      expect(either.toUnion(result)).toBeInstanceOf(JsonWebTokenError);
+      return expect(result).rejects.toBeInstanceOf(JsonWebTokenError);
     });
 
     it('returns JsonWebTokenError when token is invalid', async () => {
-      const header = await mkAuthHeader('test.myshopify.com');
-      const result = await verifyAuthHeader(header + 'xxx')(defaultEnv)();
+      const header = await createAuthHeader('test.myshopify.com');
+      const result = verifyAuthHeader(
+        {
+          getApiSecret,
+        },
+        header + 'xxx',
+      );
 
-      expect(either.toUnion(result)).toBeInstanceOf(JsonWebTokenError);
+      return expect(result).rejects.toBeInstanceOf(JsonWebTokenError);
     });
 
     it('returns JsonWebTokenError when payload does not have ShopOrigin in `dest` field', async () => {
-      const header = await mkAuthHeader('xxx');
-      const result = await verifyAuthHeader(header)(defaultEnv)();
+      const header = await createAuthHeader('xxx');
+      const result = verifyAuthHeader(
+        {
+          getApiSecret,
+        },
+        header,
+      );
 
-      expect(either.toUnion(result)).toBeInstanceOf(JsonWebTokenError);
+      return expect(result).rejects.toBeInstanceOf(JsonWebTokenError);
     });
 
-    it('returns verified payload with ShopOrigin for valid input', async () => {
+    it('returns verified payload with ShopOrigin for valid input', () => {
       return fc.assert(
         fc.asyncProperty(token.arbitraryWithParts(), async (_token) => {
           const [token, parts] = await _token;
@@ -67,15 +84,18 @@ describe('jwt', () => {
             shopOrigin: parts.shopOrigin.toLowerCase(),
           };
 
-          const result = await verifyAuthHeader(`Bearer ${token}`)({
-            getApiSecret: (decodedToken) => {
-              expect(decodedToken).toStrictEqual(expected);
+          const result = await verifyAuthHeader(
+            {
+              getApiSecret: (decodedToken) => {
+                expect(decodedToken).toStrictEqual(expected);
 
-              return parts.apiCredentials.secret;
+                return parts.apiCredentials.secret;
+              },
             },
-          })();
+            `Bearer ${token}`,
+          );
 
-          expect(result).toStrictEqual(either.right(expected));
+          expect(result).toStrictEqual(expected);
         }),
       );
     });
