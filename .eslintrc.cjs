@@ -29,5 +29,11 @@ module.exports = {
         '@typescript-eslint/no-use-before-define': [2, { functions: false }],
       },
     },
+    {
+      files: ['*.test.ts', '*.test.tsx'],
+      rules: {
+        '@typescript-eslint/explicit-function-return-type': [0],
+      },
+    },
   ],
 };

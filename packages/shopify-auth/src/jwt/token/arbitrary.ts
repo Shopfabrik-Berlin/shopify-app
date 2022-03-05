@@ -1,17 +1,15 @@
 import { shopOrigin, ShopOrigin } from '@shopfabrik/shopify-data';
 import type { JsonValue } from 'fast-check';
 import * as fc from 'fast-check';
-import { task, taskEither } from 'fp-ts';
-import { pipe } from 'fp-ts/function';
 import type { ApiCredentials } from '../../apiCredentials';
 import * as apiCredentials from '../../apiCredentials';
 import type * as arbitrary from '../../utils/arbitrary';
 import { sign } from '../jwt';
 
 export type ArbitraryParts = {
-  readonly apiCredentials: ApiCredentials;
-  readonly shopOrigin: ShopOrigin;
-  readonly payload?: Readonly<JsonValue>;
+  apiCredentials: ApiCredentials;
+  shopOrigin: ShopOrigin;
+  payload?: JsonValue;
 };
 
 export type ArbitraryConfig = arbitrary.Map<ArbitraryParts>;
@@ -30,31 +28,26 @@ export const arbitraryWithParts = (
       ...DEFAULT_CONFIG,
       ...config,
     })
-    .map((parts) => {
-      const normalizedPayload = JSON.parse(JSON.stringify(parts.payload)) as JsonValue;
+    .map(async (parts) => {
+      const payload = JSON.parse(JSON.stringify(parts.payload)) as JsonValue;
 
-      return pipe(
-        sign(
-          {
-            shopOrigin: parts.shopOrigin,
-            payload: normalizedPayload,
-          },
-          {
+      const token = await sign(
+        {
+          credentials: parts.apiCredentials,
+          shopOrigin: parts.shopOrigin,
+          options: {
             noTimestamp: true,
           },
-        )(parts.apiCredentials),
-        taskEither.fold(
-          (error) => () => Promise.reject(error),
-          (token) => {
-            return task.of([
-              token,
-              {
-                ...parts,
-                payload: normalizedPayload,
-              },
-            ] as const);
-          },
-        ),
-      )();
+        },
+        { payload },
+      );
+
+      return [
+        token,
+        {
+          ...parts,
+          payload,
+        },
+      ] as const;
     });
 };
