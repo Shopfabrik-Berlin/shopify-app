@@ -1,8 +1,7 @@
 .direnv/
 .vim/
 .vscode/
-.yarn/
 build/
 
 *.generated.*
-.pnp.*
+pnpm-lock.yaml

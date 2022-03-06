@@ -3,18 +3,18 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.1.0",
+  "packageManager": "pnpm@6.32.2",
   "scripts": {
-    "build": "yarn workspaces foreach --no-private --topological --verbose run build",
-    "build:ci": "yarn workspaces foreach --no-private --topological --verbose run build:ci",
-    "clean": "yarn workspaces foreach --parallel --verbose run clean",
-    "format": "yarn format:base .",
+    "build": "pnpm --recursive build",
+    "build:ci": "pnpm --recursive build:ci",
+    "clean": "pnpm --recursive --parallel --aggregate-output --reporter=append-only clean",
+    "devPreinstall": "husky install",
+    "format": "pnpm format:base .",
     "format:base": "prettier --config .prettierrc.ci.cjs --write",
-    "lint": "yarn lint:base .",
+    "lint": "pnpm lint:base .",
     "lint:base": "eslint --config .eslintrc.ci.cjs --max-warnings=0",
-    "postinstallDev": "husky install",
-    "test": "yarn workspaces foreach --no-private --parallel --verbose run test --silent",
-    "g:clean": "cd $INIT_CWD && git clean -dfX",
+    "test": "pnpm --recursive --parallel --aggregate-output --reporter=append-only test -- --silent",
+    "g:clean": "cd $INIT_CWD && git clean -dfX -e '!node_modules'",
     "g:dpdm": "cd $INIT_CWD && dpdm --transform --tree false --warning false --exit-code circular:1"
   },
   "devDependencies": {
