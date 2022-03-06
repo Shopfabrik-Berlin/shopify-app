@@ -2,6 +2,7 @@
   inputs = {
     devshell.url = "github:numtide/devshell";
     flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
 
   outputs = { self, devshell, flake-utils, nixpkgs }:
@@ -17,7 +18,7 @@
       shell = { pkgs }:
         pkgs.devshell.mkShell {
           motd = "";
-          packages = with pkgs; [ nodejs yarn ];
+          packages = with pkgs; [ nodejs ] ++ (with nodePackages; [ pnpm ]);
         };
     };
 }

@@ -16,22 +16,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Setup node.js
         uses: actions/setup-node@v2
         with:
+          cache: pnpm
           node-version: 16
+          registry-url: https://registry.npmjs.org
 
       - name: Install
-        run: yarn install --immutable --immutable-cache
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: yarn build:ci
+        run: pnpm build:ci
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
 
       - name: Test
-        run: yarn test
+        run: pnpm test
 
       - name: Release
         id: release
@@ -43,5 +48,5 @@ jobs:
       - name: Publish
         if: ${{ steps.release.outputs.releases_created }}
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: ./tools/publish_paths.sh '${{ steps.release.outputs.paths_released }}'
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm -r --access public publish
