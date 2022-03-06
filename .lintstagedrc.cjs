@@ -16,9 +16,9 @@ async function removeIgnoredFiles(files) {
 }
 
 function lintFiles(files) {
-  return `yarn lint:base --fix ${files.join(' ')}`;
+  return `pnpm lint:base --fix ${files.join(' ')}`;
 }
 
 function formatFiles(files) {
-  return `yarn format:base ${files.join(' ')}`;
+  return `pnpm format:base ${files.join(' ')}`;
 }

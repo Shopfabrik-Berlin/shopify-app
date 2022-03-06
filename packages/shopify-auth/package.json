@@ -11,9 +11,6 @@
     "name": "Denis Goncharenko",
     "email": "dddenjer@gmail.com"
   },
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "files": [
     "./build"
   ],
@@ -29,14 +26,13 @@
     "directory": "packages/shopify-auth"
   },
   "sideEffects": false,
-  "packageManager": "yarn@3.1.0",
   "scripts": {
-    "build": "yarn build:cjs && yarn build:esm",
-    "build:ci": "yarn dpdm && yarn build",
+    "build": "pnpm build:cjs && pnpm build:esm",
+    "build:ci": "pnpm dpdm && pnpm build",
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:esm": "tsc --project ./tsconfig.esm.json",
-    "clean": "yarn g:clean",
-    "dpdm": "yarn g:dpdm ./src/index.ts",
+    "clean": "pnpm -w g:clean",
+    "dpdm": "pnpm -w g:dpdm ./src/index.ts",
     "test": "jest"
   },
   "dependencies": {
