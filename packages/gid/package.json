@@ -35,6 +35,6 @@
     "dpdm": "pnpm -w g:dpdm ./src/index.ts"
   },
   "devDependencies": {
-    "typescript": "4.4.4"
+    "typescript": "4.6.2"
   }
 }
