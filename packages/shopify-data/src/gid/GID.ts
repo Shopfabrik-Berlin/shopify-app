@@ -1,7 +1,7 @@
 export type GID = string & GIDBrand;
 
 export enum GIDBrand {
-  _ = '',
+  _ = '_',
 }
 
 const GID_RX = /^gid:\/\/([\w-]+)\/([\w-]+)\/([\w-]+)(?:\?(.*))*$/;

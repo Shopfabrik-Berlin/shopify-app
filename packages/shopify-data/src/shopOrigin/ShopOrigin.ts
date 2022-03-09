@@ -1,7 +1,7 @@
 export type ShopOrigin = string & ShopOriginBrand;
 
 export enum ShopOriginBrand {
-  _ = '',
+  _ = '_',
 }
 
 const SHOP_ORIGIN_RX = /^[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.(com|io)$/;
