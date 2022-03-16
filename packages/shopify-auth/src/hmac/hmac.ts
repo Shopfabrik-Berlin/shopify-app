@@ -1,8 +1,9 @@
 import { shopOrigin, ShopOrigin } from '@shopfabrik/shopify-data';
-import * as crypto from 'crypto';
 import type { URLSearchParams } from 'url';
 import { InvalidArgumentError } from '../utils/error';
 import * as searchParams from '../utils/searchParams';
+import { InvalidHmacError } from './error';
+import { isValidPayload } from './utils';
 
 export const verifyHmac: VerifyFn = verify({
   key: 'hmac',
@@ -24,13 +25,6 @@ export type VerifyEnv = {
   getApiSecret: (shopOrigin: ShopOrigin) => string | PromiseLike<string>;
 };
 
-export class InvalidHmacError extends Error {
-  constructor(hmac: string) {
-    super(`Invalid HMAC: ${hmac}`);
-    Object.defineProperty(this, 'name', { value: 'InvalidHmacError' });
-  }
-}
-
 type VerifyConfig = EncodeSearchParamsConfig & {
   separator: string;
 };
@@ -43,13 +37,12 @@ function verify(config: VerifyConfig): VerifyFn {
     const _shopOrigin = parseShopOrigin(_searchParams);
 
     const _isValidPayload = isValidPayload({
-      hmac,
+      hmac: Buffer.from(hmac, 'hex'),
       payload: _encodeSearchParams(_searchParams).join(config.separator),
       secret: await env.getApiSecret(_shopOrigin),
     });
-
     if (!_isValidPayload) {
-      throw new InvalidHmacError(hmac);
+      throw new InvalidHmacError();
     }
 
     return _shopOrigin;
@@ -103,20 +96,4 @@ function encodeSearchEntry(config: EncodeSearchEntryConfig) {
 
     return [encodedKey, encodedValue];
   };
-}
-
-type IsValidPayloadConfig = {
-  hmac: string;
-  payload: string;
-  secret: string;
-};
-
-function isValidPayload(config: IsValidPayloadConfig): boolean {
-  try {
-    const validHmac = crypto.createHmac('sha256', config.secret).update(config.payload).digest();
-    const compareHmac = Buffer.from(config.hmac, 'hex');
-    return crypto.timingSafeEqual(validHmac, compareHmac);
-  } catch {
-    return false;
-  }
 }
