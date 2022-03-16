@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import { URLSearchParams } from 'url';
 import { InvalidArgumentError } from '../utils/error';
-import { InvalidHmacError, verifyHmac, verifySignature } from './hmac';
+import { InvalidHmacError } from './error';
+import { verifyHmac, verifySignature } from './hmac';
 
 const createHmac = (secret: string, payload: string): string => {
   return crypto.createHmac('sha256', secret).update(payload).digest('hex');
