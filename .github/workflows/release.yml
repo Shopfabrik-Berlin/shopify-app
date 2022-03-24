@@ -49,4 +49,4 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm -r --access public publish
+        run: pnpm -r publish --access public
