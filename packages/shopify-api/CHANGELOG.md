@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.2.2...shopify-api-v0.3.0) (2022-03-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **shopify-api:** simplify package
+
+### Code Refactoring
+
+* **shopify-api:** simplify package ([b6e9b1c](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/b6e9b1c04ee98a9f2909649324a285ec6408750c))
+
 ### [0.2.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.2.1...shopify-api-v0.2.2) (2021-12-22)
 
 
