@@ -8,11 +8,11 @@
     "build": "pnpm --recursive build",
     "build:ci": "pnpm --recursive build:ci",
     "clean": "pnpm --recursive --parallel --aggregate-output --reporter=append-only clean",
-    "devPreinstall": "husky install",
     "format": "pnpm format:base .",
     "format:base": "prettier --config .prettierrc.ci.cjs --write",
     "lint": "pnpm lint:base .",
     "lint:base": "eslint --config .eslintrc.ci.cjs --max-warnings=0",
+    "prepare": "husky install",
     "test": "pnpm --recursive --parallel --aggregate-output --reporter=append-only test -- --silent",
     "g:clean": "cd $INIT_CWD && git clean -dfX -e '!node_modules'",
     "g:dpdm": "cd $INIT_CWD && dpdm --transform --tree false --warning false --exit-code circular:1"
