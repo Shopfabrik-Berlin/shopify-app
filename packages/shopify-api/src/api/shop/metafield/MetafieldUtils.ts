@@ -1,7 +1,7 @@
 import type { GID } from '@shopfabrik/shopify-data';
 import { graphql } from '../../../client';
 import type { GraphQLClientEnv } from '../../../client/graphql';
-import { memoized, rio } from '../../../utils';
+import { rio } from '../../../utils';
 import { NotFoundError } from '../../../utils/error';
 import type { DecodedMetafield, Metafield } from '../../metafield';
 import {
@@ -43,8 +43,6 @@ const deleteMetafield = rio.p.map(
 );
 
 export function createMetafieldUtils<T>(config: MetafieldUtilsConfig<T>): MetafieldUtils<T> {
-  const _getShopId = memoized(getShopId);
-
   const decodeMetafield = (metafield: Metafield): DecodedMetafield<T> | null => {
     const value = config.decode(metafield.value);
     return value === null ? null : { ...metafield, value };
@@ -74,7 +72,7 @@ export function createMetafieldUtils<T>(config: MetafieldUtilsConfig<T>): Metafi
     },
 
     set: async (env, value) => {
-      const shopId = await _getShopId(env, {});
+      const shopId = await getShopId(env, {});
       const metafields = await setMetafields(env, {
         metafields: {
           namespace: config.namespace,
