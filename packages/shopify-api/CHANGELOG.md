@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.3.0...shopify-api-v0.3.1) (2022-03-25)
+
+
+### Bug Fixes
+
+* **shopify-api:** stop memoizing metafield shop id ([5d61a71](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/5d61a7146d75ecda3047476d998a6f5925835a72))
+
 ## [0.3.0](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.2.2...shopify-api-v0.3.0) (2022-03-24)
 
 
