@@ -4,7 +4,7 @@ export type GraphQLClientEnv = {
   readonly [S in typeof GraphQLClientSymbol]: GraphQLClient;
 };
 
-const GraphQLClientSymbol = Symbol('GraphQLClient');
+export const GraphQLClientSymbol = Symbol('GraphQLClient');
 
 export type GraphQLClientEnvConfig = GraphQLClientConfig;
 

@@ -4,7 +4,7 @@ export type RestClienEnv = {
   readonly [S in typeof RestClientSymbol]: RestClient;
 };
 
-const RestClientSymbol = Symbol('RestClient');
+export const RestClientSymbol = Symbol('RestClient');
 
 export type RestClientEnvConfig = RestClientConfig;
 
