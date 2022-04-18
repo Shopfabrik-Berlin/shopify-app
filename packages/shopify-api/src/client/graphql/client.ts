@@ -1,25 +1,15 @@
-import {
-  ApolloClient,
-  ApolloError,
-  HttpLink,
-  InMemoryCache,
-  TypedDocumentNode,
-} from '@apollo/client/core';
+import { ApolloClient, ApolloError, HttpLink, InMemoryCache } from '@apollo/client/core';
 import type { ShopOrigin } from '@shopfabrik/shopify-data';
 import type { ExecutionResult } from 'graphql';
 import { FetchFn, HttpResponseError, SHOPIFY_ACCESS_TOKEN_HEADER } from '../fetch';
 import * as document from './document';
 import fragments from './fragment-matcher.generated';
+import type { GraphQLRequest } from './GraphQLRequest';
 import { GraphQLResponseError } from './GraphQLResponseError';
 
 export interface GraphQLClient {
   readonly request: <A, I>(request: GraphQLRequest<A, I>) => Promise<A>;
 }
-
-export type GraphQLRequest<A = unknown, I = unknown> = {
-  readonly document: TypedDocumentNode<A, I>;
-  readonly variables: I;
-};
 
 export type GraphQLClientConfig = {
   readonly accessToken: string;
