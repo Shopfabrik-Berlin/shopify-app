@@ -1,8 +1,8 @@
 import type { GraphQLError } from 'graphql';
 import { nullish } from '../../utils';
-import type { GraphQLRequest } from './client';
 import type { OperationContext } from './document';
 import * as document from './document';
+import type { GraphQLRequest } from './GraphQLRequest';
 
 export type GraphQLResponseErrorInit = {
   readonly request: GraphQLRequest;
