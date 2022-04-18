@@ -1,5 +1,17 @@
 # Changelog
 
+### [0.3.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.3.1...shopify-api-v0.3.2) (2022-04-18)
+
+
+### Features
+
+* **shopify-api:** add graphql client document matcher ([1ae45d5](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/1ae45d5eeaf50be33598f4fc1e819d70d980c296))
+
+
+### Bug Fixes
+
+* **shopify-api:** expose functionality ([59c3ee0](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/59c3ee0e668df8307b8b0d6d3936fe942b06f0d2))
+
 ### [0.3.1](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.3.0...shopify-api-v0.3.1) (2022-03-25)
 
 
