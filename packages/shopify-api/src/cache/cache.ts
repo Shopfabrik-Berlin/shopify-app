@@ -40,7 +40,7 @@ function defaultCreateCache<K, V>(): Cache<K, V> {
   return new Map();
 }
 
-function getOrCreate<K, V>(cache: Cache<K, V>, key: K, createValue: () => V): V {
+export function getOrCreate<K, V>(cache: Cache<K, V>, key: K, createValue: () => V): V {
   let value = cache.get(key);
   if (!value) {
     value = createValue();
