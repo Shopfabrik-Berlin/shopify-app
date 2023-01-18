@@ -1,5 +1,5 @@
 schema:
-  - https://${SHOPIFY_GRAPHQL_SHOP_ORIGIN}/admin/api/2021-10/graphql.json:
+  - https://${SHOPIFY_GRAPHQL_SHOP_ORIGIN}/admin/api/2022-10/graphql.json:
       headers:
         X-Shopify-Access-Token: ${SHOPIFY_GRAPHQL_ACCESS_TOKEN}
 
