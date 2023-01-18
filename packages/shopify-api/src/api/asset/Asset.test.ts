@@ -83,7 +83,7 @@ describe('api', () => {
         const result = await _.get(env, input);
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://test.myshopify.com/admin/api/2021-10/themes/001/assets.json?asset[key]=asset-001',
+          'https://test.myshopify.com/admin/api/2022-10/themes/001/assets.json?asset[key]=asset-001',
           {
             headers: {
               'x-shopify-access-token': 'access-token',
@@ -164,7 +164,7 @@ describe('api', () => {
         const result = await _.list(env, gid.shopify.unsafeEncode('Theme')('001'));
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://test.myshopify.com/admin/api/2021-10/themes/001/assets.json',
+          'https://test.myshopify.com/admin/api/2022-10/themes/001/assets.json',
           {
             headers: {
               'x-shopify-access-token': 'access-token',
@@ -318,7 +318,7 @@ describe('api', () => {
         const result = await _.remove(env, input);
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://test.myshopify.com/admin/api/2021-10/themes/001/assets.json?asset[key]=asset-001',
+          'https://test.myshopify.com/admin/api/2022-10/themes/001/assets.json?asset[key]=asset-001',
           {
             method: 'DELETE',
             headers: {
@@ -396,7 +396,7 @@ describe('api', () => {
         const result = await _.set(env, input);
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://test.myshopify.com/admin/api/2021-10/themes/001/assets.json',
+          'https://test.myshopify.com/admin/api/2022-10/themes/001/assets.json',
           {
             method: 'PUT',
             headers: {

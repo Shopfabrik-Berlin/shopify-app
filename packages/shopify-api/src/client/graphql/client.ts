@@ -23,7 +23,7 @@ export function createClient(config: GraphQLClientConfig): GraphQLClient {
       possibleTypes: fragments.possibleTypes,
     }),
     link: new HttpLink({
-      uri: `https://${config.shopOrigin}/admin/api/2021-10/graphql.json`,
+      uri: `https://${config.shopOrigin}/admin/api/2022-10/graphql.json`,
       fetch: config.fetch as never,
       headers: {
         [SHOPIFY_ACCESS_TOKEN_HEADER]: config.accessToken,

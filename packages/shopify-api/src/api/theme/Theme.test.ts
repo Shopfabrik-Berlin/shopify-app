@@ -68,7 +68,7 @@ describe('api', () => {
         const result = await _.get(env, gid.shopify.unsafeEncode('Theme')('001'));
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://test.myshopify.com/admin/api/2021-10/themes/001.json',
+          'https://test.myshopify.com/admin/api/2022-10/themes/001.json',
           {
             headers: {
               'x-shopify-access-token': 'access-token',
@@ -140,7 +140,7 @@ describe('api', () => {
         const result = await _.list(env);
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://test.myshopify.com/admin/api/2021-10/themes.json',
+          'https://test.myshopify.com/admin/api/2022-10/themes.json',
           {
             headers: {
               'x-shopify-access-token': 'access-token',
