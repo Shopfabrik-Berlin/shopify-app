@@ -47,7 +47,7 @@ function createRestFetch(input: RestFetchConfig) {
     };
 
     const response = await input.fetch(
-      `https://${input.shopOrigin}/admin/api/2021-10${url}`,
+      `https://${input.shopOrigin}/admin/api/2022-10${url}`,
       _init,
     );
 
