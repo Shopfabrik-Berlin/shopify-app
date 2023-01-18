@@ -3,7 +3,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "pnpm@6.32.2",
+  "packageManager": "pnpm@7.24.3",
   "scripts": {
     "build": "pnpm --recursive build",
     "build:ci": "pnpm --recursive build:ci",
