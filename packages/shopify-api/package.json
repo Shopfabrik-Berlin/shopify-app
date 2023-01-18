@@ -1,6 +1,6 @@
 {
   "name": "@shopfabrik/shopify-api",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Shopify API Utilities",
   "homepage": "https://github.com/Shopfabrik-Berlin/shopify-app",
   "bugs": {

@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.3](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.3.2...shopify-api-v0.3.3) (2023-01-18)
+
+
+### Features
+
+* **shopify-api:** upgrade api version to 2022-10 ([df00054](https://www.github.com/Shopfabrik-Berlin/shopify-app/commit/df000540872c80294ba3e09f6a0b050028c3682e))
+
 ### [0.3.2](https://www.github.com/Shopfabrik-Berlin/shopify-app/compare/shopify-api-v0.3.1...shopify-api-v0.3.2) (2022-04-18)
 
 
